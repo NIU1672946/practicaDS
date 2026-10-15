@@ -6,11 +6,19 @@ import org.json.JSONObject;
 
 public class Door {
   private final String id;
-  private boolean closed; // physically
+  private boolean closed;// physically
+  private DoorState state;
+  private final Space fromSpace;
+  private final Space toSpace;
 
-  public Door(String id) {
+
+  public Door(String id, Space fromSpace, Space toSpace) {
     this.id = id;
-    closed = true;
+    this.closed = true;
+    this.state = new Unlocked(this); // estado inicial según el diagrama de estados
+    this.fromSpace = fromSpace;
+    this.toSpace = toSpace;
+    this.toSpace.addDoor(this); // registra esta puerta como puerta de acceso en el espacio destino
   }
 
   public void processRequest(RequestReader request) {
@@ -28,25 +36,17 @@ public class Door {
   private void doAction(String action) {
     switch (action) {
       case Actions.OPEN:
-        if (closed) {
-          closed = false;
-        } else {
-          System.out.println("Can't open door " + id + " because it's already open");
-        }
+        state.open();
         break;
       case Actions.CLOSE:
-        if (closed) {
-          System.out.println("Can't close door " + id + " because it's already closed");
-        } else {
-          closed = true;
-        }
+        state.close();
         break;
       case Actions.LOCK:
-        // TODO
-        // fall through
+        state.lock();
+        break;
       case Actions.UNLOCK:
-        // TODO
-        // fall through
+        state.unlock();
+        break;
       case Actions.UNLOCK_SHORTLY:
         // TODO
         System.out.println("Action " + action + " not implemented yet");
@@ -65,9 +65,15 @@ public class Door {
     return id;
   }
 
-  public String getStateName() {
-    return "unlocked";
-  }
+  public String getStateName() {return state.getName();}
+
+  public Space getFromSpace() {return fromSpace;}
+
+  public Space getToSpace() {return toSpace;}
+
+  public void setClosed(boolean closed) {this.closed = closed;}
+
+  public void setState(DoorState state){this.state = state;}
 
   @Override
   public String toString() {
