@@ -1,7 +1,12 @@
 package baseNoStates;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import java.time.LocalDate;
+import java.time.Month;
+
 
 public final class DirectoryUserGroups {
   private static final ArrayList<UserGroup> userGroups = new ArrayList<>();
@@ -16,9 +21,8 @@ public final class DirectoryUserGroups {
 
     //can acces nowhere, do nothing, never.
     UserGroup unknown =new UserGroup(noAreas,
-            new int[]{0,0},
-            new int[]{0,0},
-            new int[]{0,0},
+            new LocalDateTime[]{LocalDate.of(0000, Month.JANUARY, 1).atStartOfDay(),
+                    LocalDate.of(0000, Month.JANUARY, 1).atStartOfDay()},
             new int[]{0,0},
             new int[]{0,0},
             emptyActions
@@ -49,9 +53,8 @@ public final class DirectoryUserGroups {
     employeeActions.add(Actions.UNLOCK_SHORTLY);
 
     UserGroup employeeGroup = new UserGroup(employeeAreas,
-            new int[]{2026,2027},
-            new int[]{9,3},
-            new int[]{1,1},
+            new LocalDateTime[]{LocalDate.of(2026, Month.SEPTEMBER, 1).atStartOfDay(),
+                    LocalDate.of(2027, Month.MARCH, 1).atStartOfDay()},
             new int[]{0,4},
             new int[]{9,17},
             employeeActions
@@ -80,9 +83,8 @@ public final class DirectoryUserGroups {
     managerActions.add(Actions.CLOSE);
 
     UserGroup managerGroup = new UserGroup(managerAreas,
-            new int[]{2026,2027},
-            new int[]{9,3},
-            new int[]{1,1},
+            new LocalDateTime[]{LocalDate.of(2026, Month.SEPTEMBER, 1).atStartOfDay(),
+                    LocalDate.of(2027, Month.MARCH, 1).atStartOfDay()},
             new int[]{0,5},
             new int[]{8,20},
             managerActions
@@ -111,9 +113,8 @@ public final class DirectoryUserGroups {
     adminActions.add(Actions.CLOSE);
 
     UserGroup adminGroup = new UserGroup(adminAreas,
-            new int[]{2026,2100},
-            new int[]{1,1},
-            new int[]{1,1},
+            new LocalDateTime[]{LocalDate.of(2026, Month.JANUARY, 1).atStartOfDay(),
+                    LocalDate.of(2100, Month.JANUARY, 1).atStartOfDay()},
             new int[]{0,7},
             new int[]{0,24},
             adminActions

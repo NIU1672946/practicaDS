@@ -7,44 +7,38 @@ public class UserGroup {
     private ArrayList<User> users = new ArrayList<User>();
     private final ArrayList<Area> areas;
 
-    private final int[] years;
-    private final int[] months;
+    private final LocalDateTime[] dates;
     private final int[] weekdays;
     private final int[] hours;
-    private final int[] days;
 
     private ArrayList<String> actions = new ArrayList<String>();
 
     public UserGroup(ArrayList<Area> areas,
-                     int[] years, int[] months, int[] days,int[] weekdays, int[] hours,ArrayList<String> actions){
+                     LocalDateTime[] dates, int[] weekdays, int[] hours,ArrayList<String> actions){
 
         this.areas = areas;
-        this.years = years;
-        this.months = months;
-        this.days = days;
+        this.dates = dates;
         this.weekdays = weekdays;
         this.hours = hours;
 
         this.actions = actions;
-
     }
 
-/*
     public boolean canSendRequests(LocalDateTime now){
-
         if (
-                (years[0] <= now.getYear() && now.getYear() <= years[1])&&
-                (months[0] <= now.getMonthValue() && now.getMonthValue() <= months[1])&&
+                (dates[0].isBefore(now) && now.isBefore(dates[1]))&&
                 (weekdays[0] <= now.getDayOfWeek().getValue() && now.getDayOfWeek().getValue() <= weekdays[1])&&
                 (hours[0] <= now.getHour() && now.getHour() <= hours[1])
-        ){
+            ){
             return true;
-        }else{
+            }
+        else{
             return false;
         }
+
     }
 
- */
+
     public boolean canDoAction(String action){
         return actions.contains(action);
     }
