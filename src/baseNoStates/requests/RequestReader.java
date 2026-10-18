@@ -74,8 +74,10 @@ public class RequestReader implements Request {
 
   // see if the request is authorized and put this into the request, then send it to the door.
   // if authorized, perform the action.
+
+
   public void process() {
-    User user = DirectoryUsers.findUserByCredential(credential);
+    User user = DirectoryUserGroups.findUserByCredential(credential);//abans era DirectoryUsers suposo que esta be aixi
     Door door = DirectoryAreas.findDoorById(doorId);
     assert door != null : "door " + doorId + " not found";
     authorize(user, door);
@@ -93,16 +95,25 @@ public class RequestReader implements Request {
       authorized = false;
       addReason("user doesn't exists");
     } else {
-      //TODO: get the who, where, when and what in order to decide, and if not
+      //get the who, where, when and what in order to decide, and if not
       // authorized add the reason(s)
+
       Space fromSpace = door.getFromSpace();
       Space toSpace = door.getToSpace();
-      authorized = user.canBeInSpace(fromSpace) && user.canBeInSpace(toSpace);
+
+      //authorized = user.canBeInSpace(fromSpace) && user.canBeInSpace(toSpace);
+      authorized = user.canBeInSpace(fromSpace) && user.canBeInSpace(toSpace) && user.canSendRequests(now) && user.canDoAction(action);
       if (!user.canBeInSpace(fromSpace)) {
         addReason("user can't be in fromSpace " + fromSpace.getId());
       }
       if (!user.canBeInSpace(toSpace)) {
         addReason("user can't be in toSpace " + toSpace.getId());
+      }
+      if (!user.canSendRequests(now)) {
+        addReason("user can't send requests now. (Now is " + now + " )");
+      }
+      if (!user.canDoAction(action)) {
+        addReason("user can't do action " + action);
       }
     }
   }

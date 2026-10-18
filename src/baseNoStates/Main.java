@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 public class Main {
   public static void main(String[] args) {
     DirectoryAreas.makeAreas();
-    DirectoryUsers.makeUsers();
+    //DirectoryUsers.makeUsers();
+    DirectoryUserGroups.makeUserGroups();
 
 
     Clock c = new Clock(1);

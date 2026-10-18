@@ -37,6 +37,7 @@ public class Clock {
     public void addObserver(UnlockedShortly observer){
         observers.add(observer);
     }
+
 /*
     public void deleteObserver(UnlockedShortly observer){
         int i;

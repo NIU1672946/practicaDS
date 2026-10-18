@@ -1,16 +1,20 @@
 package baseNoStates;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class User {
   private final String name;
+  private UserGroup userGroup;
   private final String credential;
-  private final ArrayList<Area> areas;
 
-  public User(String name, String credential, ArrayList<Area> areas) {
+
+
+
+  public User(String name, UserGroup userGroup,String credential) {
     this.name = name;
+    this.userGroup = userGroup;
     this.credential = credential;
-    this.areas = areas;
   }
 
   public String getCredential() {
@@ -30,9 +34,18 @@ public class User {
    * Obtiene todos los espacios individuales contenidos dentro de las áreas
    * asignadas al usuario.
    */
+
+  public boolean canSendRequests(LocalDateTime now){
+    return userGroup.canSendRequests(now);
+  }
+
+  public boolean canDoAction(String action){
+    return userGroup.canDoAction(action);
+  }
+
   private ArrayList<Space> getSpaces() {
     ArrayList<Space> spaces = new ArrayList<>();
-    for (Area area : areas) {
+    for (Area area : userGroup.getAreas()) {
       spaces.addAll(area.getSpaces());
     }
     return spaces;
