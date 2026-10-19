@@ -17,14 +17,14 @@ public class Main {
     DirectoryUserGroups.makeUserGroups();
 
 
-    Clock c = new Clock(1);
+    //Clock c = new Clock(1);
 
-    c.start();
-    LocalDateTime a = c.getDate();
-    LocalDateTime b = c.getDate();
+    //c.start();
+    //LocalDateTime a = c.getDate();
+    //LocalDateTime b = c.getDate();
 
-    System.out.println("TEMPS:");
-    System.out.println(a);
+    //System.out.println("TEMPS:");
+    //System.out.println(a);
 
 
 
