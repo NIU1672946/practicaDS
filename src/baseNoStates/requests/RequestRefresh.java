@@ -1,12 +1,15 @@
 package baseNoStates.requests;
 
 import baseNoStates.DirectoryAreas;
-
 import baseNoStates.Door;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/*
+ * Represents a refresh request sent by the simulator to obtain the current state
+ * and physical closed status of all doors in the building so the blueprint can be repainted.
+ */
 public class RequestRefresh implements Request {
   private final ArrayList<JSONObject> jsonsDoors = new ArrayList<>();
 

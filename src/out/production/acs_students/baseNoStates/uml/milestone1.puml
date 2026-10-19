@@ -1,0 +1,192 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package baseNoStates {
+
+  class Main {
+    + main(args: String[])$
+  }
+
+  class WebServer {
+    - PORT: int$
+    - formatter: DateTimeFormatter$
+    + WebServer()
+  }
+
+  class Actions {
+    + LOCK: String$
+    + UNLOCK: String$
+    + UNLOCK_SHORTLY: String$
+    + OPEN: String$
+    + CLOSE: String$
+  }
+
+  class States {
+    + LOCKED: String$
+    + UNLOCKED: String$
+    + UNLOCKED_SHORTLY: String$
+    + PROPPED: String$
+  }
+
+  abstract class DoorState {
+    # name: String
+    + DoorState(door: Door)
+    + getName(): String
+    {abstract} + open()
+    {abstract} + close()
+    {abstract} + lock()
+    {abstract} + unlock()
+  }
+
+  class Unlocked extends DoorState {
+    + Unlocked(door: Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+  }
+
+  class Locked extends DoorState {
+    + Locked(door: Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+  }
+
+  class Door {
+    - id: String
+    - closed: boolean
+    + Door(id: String, fromSpace: Space, toSpace: Space)
+    + processRequest(request: RequestReader)
+    - doAction(action: String)
+    + isClosed(): boolean
+    + setClosed(closed: boolean)
+    + getId(): String
+    + getStateName(): String
+    + setState(state: DoorState)
+    + getFromSpace(): Space
+    + getToSpace(): Space
+    + toJson(): JSONObject
+  }
+
+  abstract class Area {
+    # id: String
+    # description: String
+    + Area(id: String, description: String, parent: Partition)
+    + getId(): String
+    {abstract} + getDoorsGivingAccess(): ArrayList<Door>
+    {abstract} + findAreaById(id: String): Area
+    {abstract} + getSpaces(): ArrayList<Space>
+  }
+
+  class Partition extends Area {
+    + Partition(id: String, description: String, parent: Partition)
+    + addArea(area: Area)
+    + getDoorsGivingAccess(): ArrayList<Door>
+    + findAreaById(id: String): Area
+    + getSpaces(): ArrayList<Space>
+  }
+
+  class Space extends Area {
+    + Space(id: String, description: String, parent: Partition)
+    + addDoor(door: Door)
+    + getDoorsGivingAccess(): ArrayList<Door>
+    + findAreaById(id: String): Area
+    + getSpaces(): ArrayList<Space>
+  }
+
+  class DirectoryAreas {
+    + makeAreas()$
+    + findAreaById(id: String): Area$
+    + findDoorById(id: String): Door$
+    + getAllDoors(): ArrayList<Door>$
+  }
+
+  class User {
+    - name: String
+    - credential: String
+    + User(name: String, userGroup: UserGroup, credential: String)
+    + getCredential(): String
+    + getName(): String
+    + canBeInSpace(sp: Space): boolean
+    + canSendRequests(now: LocalDateTime): boolean
+    + canDoAction(action: String): boolean
+  }
+
+  class UserGroup {
+    + UserGroup(areas: ArrayList<Area>, dates: LocalDateTime[], weekdays: int[], hours: int[], actions: ArrayList<String>)
+    + canSendRequests(now: LocalDateTime): boolean
+    + canDoAction(action: String): boolean
+    + getAreas(): ArrayList<Area>
+    + addUser(user: User)
+    + findUserByCredential(credential: String): User
+  }
+
+  class DirectoryUserGroups {
+    + makeUserGroups()$
+    + findUserByCredential(credential: String): User$
+  }
+}
+
+package baseNoStates.requests {
+  interface Request {
+    + answerToJson(): JSONObject
+    + toString(): String
+    + process()
+  }
+
+  class RequestRefresh implements Request {
+    + answerToJson(): JSONObject
+    + process()
+  }
+
+  class RequestReader implements Request {
+    - credential: String
+    - action: String
+    - now: LocalDateTime
+    - doorId: String
+    - authorized: boolean
+    + RequestReader(credential: String, action: String, now: LocalDateTime, doorId: String)
+    + getAction(): String
+    + isAuthorized(): boolean
+    + addReason(reason: String)
+    + process()
+    + answerToJson(): JSONObject
+  }
+
+  class RequestArea implements Request {
+    - credential: String
+    - action: String
+    - areaId: String
+    - now: LocalDateTime
+    + RequestArea(credential: String, action: String, now: LocalDateTime, areaId: String)
+    + getAction(): String
+    + process()
+    + answerToJson(): JSONObject
+  }
+}
+
+' Relaciones del Modelo
+DoorState --> "1" Door : door
+Door o--> "1" DoorState : state
+Door --> "1" Space : fromSpace
+Door --> "1" Space : toSpace
+Space o--> "*" Door : doors
+
+Partition *--> "1..*" Area : areas
+
+User --> "1" UserGroup : userGroup
+UserGroup o--> "*" User : users
+UserGroup o--> "*" Area : areas
+
+DirectoryAreas --> "1" Area : rootArea
+DirectoryAreas --> "*" Door : allDoors
+DirectoryUserGroups --> "*" UserGroup : userGroups
+
+RequestReader ..> DirectoryUserGroups : uses
+RequestReader ..> DirectoryAreas : uses
+RequestReader --> "1" Door : processes
+RequestArea --> "*" RequestReader : requestsDoors
+
+@enduml

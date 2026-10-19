@@ -1,5 +1,9 @@
 package baseNoStates;
-
+/*
+ * Concrete state of the State design pattern representing a locked door.
+ * A locked door is always physically closed and cannot be opened directly.
+ * It can only transition to Unlocked (via unlock) or to UnlockedShortly (via unlockShortly).
+ */
 public class Locked extends DoorState {
 
   public Locked(Door door) {

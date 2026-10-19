@@ -1,5 +1,10 @@
 package baseNoStates;
-
+/*
+ * Concrete state of the State design pattern representing an unlocked door.
+ * When a door is in the Unlocked state, its bolt is retracted so anyone authorized
+ * can physically open and close it. If the door is physically closed, it can transition
+ * to the Locked state upon receiving a lock action.
+ */
 public class Unlocked extends DoorState{
 
   public Unlocked(Door door){
@@ -26,6 +31,7 @@ public class Unlocked extends DoorState{
 
   @Override
   public void lock() {
+    // A door can only be locked if it is physically closed first
     if(door.isClosed()){
       door.setState(new Locked(door));
     }

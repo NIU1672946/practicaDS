@@ -3,15 +3,18 @@ package baseNoStates;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/*
+ * Represents an individual user of the ACS identified by a name and a unique credential.
+ * Following Role-Based Access Control (RBAC), permissions are not assigned directly to
+ * each user; instead, a User belongs to a UserGroup and acquires its access rights
+ * (allowed areas, actions, and schedule) by delegating permission checks to its group.
+ */
 public class User {
   private final String name;
-  private UserGroup userGroup;
+  private final UserGroup userGroup;
   private final String credential;
 
-
-
-
-  public User(String name, UserGroup userGroup,String credential) {
+  public User(String name, UserGroup userGroup, String credential) {
     this.name = name;
     this.userGroup = userGroup;
     this.credential = credential;
@@ -21,28 +24,26 @@ public class User {
     return credential;
   }
 
-  public String getName(){ return name;}
+  public String getName() {
+    return name;
+  }
 
-  /**
-   * Comprueba si el usuario tiene permiso para estar en un espacio determinado.
-   */
+  // Checks if the user is allowed to be in a given physical space
   public boolean canBeInSpace(Space sp) {
     return getSpaces().contains(sp);
   }
 
-  /**
-   * Obtiene todos los espacios individuales contenidos dentro de las áreas
-   * asignadas al usuario.
-   */
-
-  public boolean canSendRequests(LocalDateTime now){
+  // Checks if the user is allowed to send requests at the given date and time
+  public boolean canSendRequests(LocalDateTime now) {
     return userGroup.canSendRequests(now);
   }
 
-  public boolean canDoAction(String action){
+  // Checks if the user's role authorizes performing the requested action
+  public boolean canDoAction(String action) {
     return userGroup.canDoAction(action);
   }
 
+  // Retrieves all individual spaces contained within the areas granted to the user's group
   private ArrayList<Space> getSpaces() {
     ArrayList<Space> spaces = new ArrayList<>();
     for (Area area : userGroup.getAreas()) {

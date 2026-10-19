@@ -1,0 +1,241 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package baseNoStates {
+
+  class Main {
+    + {static} main(args : String[])
+  }
+
+  class WebServer {
+    - {static} PORT : int
+    - {static} formatter : DateTimeFormatter
+    + WebServer()
+  }
+
+  class Actions {
+    + {static} LOCK : String
+    + {static} UNLOCK : String
+    + {static} UNLOCK_SHORTLY : String
+    + {static} OPEN : String
+    + {static} CLOSE : String
+  }
+
+  class States {
+    + {static} LOCKED : String
+    + {static} UNLOCKED : String
+    + {static} UNLOCKED_SHORTLY : String
+    + {static} PROPPED : String
+  }
+
+  abstract class DoorState {
+    # name : String
+    + DoorState(door : Door)
+    + getName() : String
+    + {abstract} open()
+    + {abstract} close()
+    + {abstract} lock()
+    + {abstract} unlock()
+    + {abstract} unlockShortly()
+  }
+
+  class Unlocked extends DoorState {
+    + Unlocked(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class Locked extends DoorState {
+    + Locked(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class UnlockedShortly extends DoorState implements java.util.Observer {
+    - {static} TIME_TO_TRANSITION : int
+    - t0 : LocalDateTime
+    + UnlockedShortly(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+    + update(o : Observable, arg : Object)
+    - transition()
+  }
+
+  class Propped extends DoorState {
+    + Propped(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class Clock extends java.util.Observable {
+    - date : LocalDateTime
+    - timer : Timer
+    - period : int
+    + Clock(period : int)
+    + start()
+    + stop()
+    + getPeriod() : int
+    + getDate() : LocalDateTime
+  }
+
+  class Door {
+    - id : String
+    - closed : boolean
+    + Door(id : String, fromSpace : Space, toSpace : Space)
+    + processRequest(request : RequestReader)
+    - doAction(action : String)
+    + isClosed() : boolean
+    + setClosed(closed : boolean)
+    + getId() : String
+    + getStateName() : String
+    + setState(state : DoorState)
+    + getFromSpace() : Space
+    + getToSpace() : Space
+    + toJson() : JSONObject
+  }
+
+  abstract class Area {
+    # id : String
+    # description : String
+    + Area(id : String, description : String, parent : Partition)
+    + getId() : String
+    + {abstract} getDoorsGivingAccess() : Door[]
+    + {abstract} findAreaById(id : String) : Area
+    + {abstract} getSpaces() : Space[]
+  }
+
+  class Partition extends Area {
+    + Partition(id : String, description : String, parent : Partition)
+    + addArea(area : Area)
+    + getDoorsGivingAccess() : Door[]
+    + findAreaById(id : String) : Area
+    + getSpaces() : Space[]
+  }
+
+  class Space extends Area {
+    + Space(id : String, description : String, parent : Partition)
+    + addDoor(door : Door)
+    + getDoorsGivingAccess() : Door[]
+    + findAreaById(id : String) : Area
+    + getSpaces() : Space[]
+  }
+
+  class DirectoryAreas {
+    + {static} makeAreas()
+    + {static} findAreaById(id : String) : Area
+    + {static} findDoorById(id : String) : Door
+    + {static} getAllDoors() : Door[]
+  }
+
+  class User {
+    - name : String
+    - credential : String
+    + User(name : String, userGroup : UserGroup, credential : String)
+    + getCredential() : String
+    + getName() : String
+    + canBeInSpace(sp : Space) : boolean
+    + canSendRequests(now : LocalDateTime) : boolean
+    + canDoAction(action : String) : boolean
+    - getSpaces() : Space[]
+  }
+
+  class UserGroup {
+    - name : String
+    - fromDate : LocalDate
+    - toDate : LocalDate
+    - daysOfWeek : DayOfWeek[]
+    - fromTime : LocalTime
+    - toTime : LocalTime
+    - actions : String[]
+    + UserGroup(name : String, areas : Area[], fromDate : LocalDate, toDate : LocalDate, daysOfWeek : DayOfWeek[], fromTime : LocalTime, toTime : LocalTime, actions : String[])
+    + canSendRequests(now : LocalDateTime) : boolean
+    + canDoAction(action : String) : boolean
+    + getAreas() : Area[]
+    + addUser(user : User)
+    + findUserByCredential(credential : String) : User
+  }
+
+  class DirectoryUserGroups {
+    + {static} makeUserGroups()
+    + {static} findUserByCredential(credential : String) : User
+  }
+}
+
+package baseNoStates.requests {
+  interface Request {
+    + answerToJson() : JSONObject
+    + toString() : String
+    + process()
+  }
+
+  class RequestRefresh implements Request {
+    - jsonsDoors : JSONObject[]
+    + answerToJson() : JSONObject
+    + process()
+  }
+
+  class RequestReader implements Request {
+    - credential : String
+    - action : String
+    - now : LocalDateTime
+    - doorId : String
+    - userName : String
+    - authorized : boolean
+    - reasons : String[]
+    - doorStateName : String
+    - doorClosed : boolean
+    + RequestReader(credential : String, action : String, now : LocalDateTime, doorId : String)
+    + setDoorStateName(name : String)
+    + getAction() : String
+    + isAuthorized() : boolean
+    + addReason(reason : String)
+    + process()
+    - authorize(user : User, door : Door)
+    + answerToJson() : JSONObject
+  }
+
+  class RequestArea implements Request {
+    - credential : String
+    - action : String
+    - areaId : String
+    - now : LocalDateTime
+    + RequestArea(credential : String, action : String, now : LocalDateTime, areaId : String)
+    + getAction() : String
+    + process()
+    + answerToJson() : JSONObject
+  }
+}
+
+DoorState --> "1" Door : door
+Door --> "1" DoorState : state
+UnlockedShortly --> "1" Clock : clock
+
+Door --> "1" Space : fromSpace
+Door --> "1" Space : toSpace
+Space --> "*" Door : doors
+
+Partition *--> "1..*" Area : areas
+
+User --> "1" UserGroup : userGroup
+UserGroup --> "*" User : users
+UserGroup --> "*" Area : areas
+
+DirectoryAreas --> "1" Area : rootArea
+DirectoryAreas --> "*" Door : allDoors
+DirectoryUserGroups --> "*" UserGroup : userGroups
+
+RequestArea --> "*" RequestReader : requests
+
+@enduml

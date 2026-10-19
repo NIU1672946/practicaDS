@@ -1,5 +1,8 @@
 package baseNoStates;
-
+/*
+ * Defines constants for all possible action names that can be sent in requests.
+ * Using constants avoids typos when comparing action strings across the system.
+ */
 public final class Actions {
   // possible actions in reader and area requests
   public static final String LOCK = "lock";

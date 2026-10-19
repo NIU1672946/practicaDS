@@ -5,6 +5,11 @@ package baseNoStates;
 
 import java.time.LocalDateTime;
 
+/*
+ * Entry point of the Access Control Unit (ACU) server application.
+ * Initializes the building areas and doors first, then creates the user groups
+ * (which reference those areas), and finally starts the HTTP WebServer.
+ */
 public class Main {
   public static void main(String[] args) {
     DirectoryAreas.makeAreas();

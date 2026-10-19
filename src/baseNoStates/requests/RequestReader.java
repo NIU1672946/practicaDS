@@ -1,13 +1,21 @@
 package baseNoStates.requests;
 
-import baseNoStates.*;
-
+import baseNoStates.DirectoryAreas;
+import baseNoStates.DirectoryUserGroups;
+import baseNoStates.Door;
+import baseNoStates.Space;
+import baseNoStates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/*
+ * Represents an individual door request sent from a reader or remotely for a single door.
+ * It validates the four Ws (Who: user credential, Where: door's fromSpace and toSpace,
+ * When: request timestamp against the user group's schedule, What: requested action)
+ * and, if authorized, asks the target Door to execute the action.
+ */
 public class RequestReader implements Request {
   private final String credential; // who
   private final String action;     // what
@@ -43,22 +51,21 @@ public class RequestReader implements Request {
     reasons.add(reason);
   }
 
-
   @Override
   public String toString() {
     if (userName == null) {
       userName = "unknown";
     }
     return "Request{"
-            + "credential=" + credential
-            + ", userName=" + userName
-            + ", action=" + action
-            + ", now=" + now
-            + ", doorID=" + doorId
-            + ", closed=" + doorClosed
-            + ", authorized=" + authorized
-            + ", reasons=" + reasons
-            + "}";
+        + "credential=" + credential
+        + ", userName=" + userName
+        + ", action=" + action
+        + ", now=" + now
+        + ", doorID=" + doorId
+        + ", closed=" + doorClosed
+        + ", authorized=" + authorized
+        + ", reasons=" + reasons
+        + "}";
   }
 
   public JSONObject answerToJson() {
@@ -74,10 +81,8 @@ public class RequestReader implements Request {
 
   // see if the request is authorized and put this into the request, then send it to the door.
   // if authorized, perform the action.
-
-
   public void process() {
-    User user = DirectoryUserGroups.findUserByCredential(credential);//abans era DirectoryUsers suposo que esta be aixi
+    User user = DirectoryUserGroups.findUserByCredential(credential);
     Door door = DirectoryAreas.findDoorById(doorId);
     assert door != null : "door " + doorId + " not found";
     authorize(user, door);
@@ -95,14 +100,17 @@ public class RequestReader implements Request {
       authorized = false;
       addReason("user doesn't exists");
     } else {
-      //get the who, where, when and what in order to decide, and if not
+      userName = user.getName();
+      // get the who, where, when and what in order to decide, and if not
       // authorized add the reason(s)
-
       Space fromSpace = door.getFromSpace();
       Space toSpace = door.getToSpace();
 
-      //authorized = user.canBeInSpace(fromSpace) && user.canBeInSpace(toSpace);
-      authorized = user.canBeInSpace(fromSpace) && user.canBeInSpace(toSpace) && user.canSendRequests(now) && user.canDoAction(action);
+      authorized = user.canBeInSpace(fromSpace)
+          && user.canBeInSpace(toSpace)
+          && user.canSendRequests(now)
+          && user.canDoAction(action);
+
       if (!user.canBeInSpace(fromSpace)) {
         addReason("user can't be in fromSpace " + fromSpace.getId());
       }
@@ -118,4 +126,3 @@ public class RequestReader implements Request {
     }
   }
 }
-

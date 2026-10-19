@@ -1,9 +1,17 @@
 package baseNoStates;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/*
+ * Represents a specific physical room or space in the building.
+ * Acts as the Leaf class in the Composite design pattern because it cannot contain
+ * sub-areas.
+ *
+ * A Space needs to know the doors that give access to it (those having this space as 'toSpace')
+ * so that when an area request (lock/unlock) is sent to this space or an ancestor partition,
+ * all descendant access doors can be retrieved and processed.
+ */
 public class Space extends Area{
 
   private final ArrayList<Door> doors = new ArrayList<>();

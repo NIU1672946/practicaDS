@@ -1,5 +1,12 @@
 package baseNoStates;
 
+/*
+ * Concrete state of the State design pattern representing a propped door.
+ * A door enters this alarm state when it was unlocked shortly, opened, and left open
+ * for more than 10 seconds. Because the door is physically open, it cannot be locked
+ * directly (locking an open door would be inconsistent). Once the door is physically
+ * closed (close action), it automatically returns to the Locked state.
+ */
 public class Propped extends DoorState {
     public Propped(Door door) {
         super(door);

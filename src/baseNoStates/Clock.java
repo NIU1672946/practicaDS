@@ -1,106 +1,55 @@
 package baseNoStates;
 
 import java.time.LocalDateTime;
+import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.ArrayList;
-
-public class Clock {
-    private LocalDateTime date;
-    private Timer timer;
-    private int period; // seconds
-
-    private ArrayList<UnlockedShortly> observers = new ArrayList<UnlockedShortly>();
-
-
-
-    public Clock(int period) {
-        this.period = period;
-        timer = new Timer();
-        this.start();
-
-    }
-
-    public Clock() {
-        this.period = 1;
-        timer = new Timer();
-        this.start();
-
-    }
-
-    public void updateObservers(LocalDateTime time){//iterates through the observers array and updates each one of them.
-        for (UnlockedShortly currentObserver : observers){
-            currentObserver.updateTime(time);
-        }
-    }
-
-    public void addObserver(UnlockedShortly observer){
-        observers.add(observer);
-    }
 
 /*
-    public void deleteObserver(UnlockedShortly observer){
-        int i;
-
-        for (i = 0; i<observers.size(); i++){
-            if (observers.get(i) == observer){
-                break;
-            }
-        }
-
-        observers.remove(i);
-
-        //yes I do know that it would be way more efficient to just return the index in wich the observer is added in addObserver,
-        //make UnlockedShortly store it. This way deleteObserver() could just have one int parameter named index or whatever
-        //and the funciton would be as simple and efficient as observers.remove(index).
-
-        //but I'm worreid that could cause problem on the long run. What if an element previous to the one you are deleting gets deleted? you wouldn't be deleting
-        //the right one but the next one. what if there's no next one?
-
-        //for me this is safer althought less efficient.
-
-        //espero que valoris que faci aquestes parrafades en angles enlloc de demanar-li a la IA que me les faci . . .
-
-    }
-
+ * System clock running in a separate background thread using java.util.Timer and TimerTask.
+ * Acts as the Observable subject in the Observer design pattern.
+ *
+ * Instead of pausing the main execution thread with Thread.sleep(10000) (which would freeze
+ * the ACU server and prevent it from processing other requests), this clock ticks periodically
+ * every 'period' seconds and notifies all subscribed UnlockedShortly observers of the current time.
  */
-    public void deleteReadyStates(){
-        for (int i = 0; i< observers.size(); i++){
-            if (observers.get(i).getReadyToDelete()){
-                observers.remove(i);
-            }
-        }
-    }
+@SuppressWarnings("deprecation")
+public class Clock extends Observable {
+  private LocalDateTime date;
+  private final Timer timer;
+  private final int period; // seconds
 
-    public void start() {
-        TimerTask repeatedTask = new TimerTask() {
-            public void run() {
-                // Instance of an anonymous class
-                deleteReadyStates();
+  public Clock(int period) {
+    this.period = period;
+    this.timer = new Timer(true);
+  }
 
-                date = LocalDateTime.now();
-                updateObservers(date); // update all observers
+  public Clock() {
+    this(1);
+  }
 
-                //System.out.println("run() executed at " + date);
-            }
-        };
+  public void start() {
+    TimerTask repeatedTask = new TimerTask() {
+      @Override
+      public void run() {
+        // Instance of an anonymous class executed periodically by the timer thread
+        date = LocalDateTime.now();
+        setChanged();
+        notifyObservers(date); // update all subscribed UnlockedShortly observers
+        // System.out.println("run() executed at " + date);
+      }
+    };
 
-        timer.scheduleAtFixedRate(
-                repeatedTask,
-                0,
-                1000 * period
-        );
-    }
+    timer.scheduleAtFixedRate(
+        repeatedTask,
+        0,
+        1000L * period
+    );
+  }
 
-    public void stop() {
-        timer.cancel();
-    }
+  public void stop() {timer.cancel();}
 
-    public int getPeriod() {
-        return period;
-    }
+  public int getPeriod() {return period;}
 
-    public LocalDateTime getDate() {
-        return date;
-    }
+  public LocalDateTime getDate() {return date;}
 }

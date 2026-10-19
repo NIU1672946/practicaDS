@@ -1,70 +1,81 @@
 package baseNoStates;
 
-import java.time.LocalDateTime;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import java.time.LocalDate;
-import java.time.Month;
-
-
+/*
+ * Directory class responsible for creating and storing all UserGroup instances
+ * (blank, employees, managers, admin) along with their assigned users, areas,
+ * allowed actions, and schedules. Also provides user lookup by credential.
+ */
 public final class DirectoryUserGroups {
   private static final ArrayList<UserGroup> userGroups = new ArrayList<>();
 
   public static void makeUserGroups() {
+    userGroups.clear();
+
+    ArrayList<DayOfWeek> monToFri = new ArrayList<>(Arrays.asList(
+        DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY, DayOfWeek.FRIDAY
+    ));
+    ArrayList<DayOfWeek> monToSat = new ArrayList<>(monToFri);
+    monToSat.add(DayOfWeek.SATURDAY);
+
+    ArrayList<DayOfWeek> allDays = new ArrayList<>(monToSat);
+    allDays.add(DayOfWeek.SUNDAY);
+
     // users without any privilege, just to keep temporally users instead of deleting them,
     // this is to withdraw all permissions but still to keep user data to give back
     // permissions later
     ArrayList<Area> noAreas = new ArrayList<>();
+    ArrayList<String> emptyActions = new ArrayList<>();
 
-    ArrayList<String> emptyActions = new ArrayList<String>();
-
-    //can acces nowhere, do nothing, never.
-    UserGroup unknown =new UserGroup(noAreas,
-            new LocalDateTime[]{LocalDate.of(0000, Month.JANUARY, 1).atStartOfDay(),
-                    LocalDate.of(0000, Month.JANUARY, 1).atStartOfDay()},
-            new int[]{0,0},
-            new int[]{0,0},
-            emptyActions
-            );
-
-    unknown.addUser(new User("Bernat",unknown, "12345"));
-    unknown.addUser(new User("Blai", unknown,"77532"));
-
-    userGroups.add(
-            unknown
+    // can access nowhere, do nothing, never
+    UserGroup blankGroup = new UserGroup(
+        "blank",
+        noAreas,
+        LocalDate.of(2026, Month.JANUARY, 1),
+        LocalDate.of(2026, Month.JANUARY, 1),
+        new ArrayList<>(),
+        LocalTime.of(0, 0),
+        LocalTime.of(0, 0),
+        emptyActions
     );
-
-
+    blankGroup.addUser(new User("Bernat", blankGroup, "12345"));
+    blankGroup.addUser(new User("Blai", blankGroup, "77532"));
+    userGroups.add(blankGroup);
 
     // employees :
     // Sep. 1 this year to Mar. 1 next year
     // week days 9-17h
-    // just shortly unlock
+    // open, close, and shortly unlock
     // ground floor, floor1, exterior, stairs (this, for all), that is, everywhere but the parking
     ArrayList<Area> employeeAreas = new ArrayList<>(Arrays.asList(
-            DirectoryAreas.findAreaById("ground_floor"),
-            DirectoryAreas.findAreaById("floor1"),
-            DirectoryAreas.findAreaById("exterior"),
-            DirectoryAreas.findAreaById("stairs")
+        DirectoryAreas.findAreaById("ground_floor"),
+        DirectoryAreas.findAreaById("floor1"),
+        DirectoryAreas.findAreaById("exterior"),
+        DirectoryAreas.findAreaById("stairs")
     ));
-
-    ArrayList<String> employeeActions = new ArrayList<String>();
-    employeeActions.add(Actions.UNLOCK_SHORTLY);
-
-    UserGroup employeeGroup = new UserGroup(employeeAreas,
-            new LocalDateTime[]{LocalDate.of(2026, Month.SEPTEMBER, 1).atStartOfDay(),
-                    LocalDate.of(2027, Month.MARCH, 1).atStartOfDay()},
-            new int[]{0,4},
-            new int[]{9,17},
-            employeeActions
+    ArrayList<String> employeeActions = new ArrayList<>(Arrays.asList(
+        Actions.OPEN, Actions.CLOSE, Actions.UNLOCK_SHORTLY
+    ));
+    UserGroup employeeGroup = new UserGroup(
+        "employees",
+        employeeAreas,
+        LocalDate.of(2026, Month.SEPTEMBER, 1),
+        LocalDate.of(2027, Month.MARCH, 1),
+        monToFri,
+        LocalTime.of(9, 0),
+        LocalTime.of(17, 0),
+        employeeActions
     );
-
-    unknown.addUser(new User("Ernest", employeeGroup,"74984"));
-    unknown.addUser(new User("Eulalia", employeeGroup,"43295"));
-    userGroups.add(
-            employeeGroup
-    );
+    employeeGroup.addUser(new User("Ernest", employeeGroup, "74984"));
+    employeeGroup.addUser(new User("Eulalia", employeeGroup, "43295"));
+    userGroups.add(employeeGroup);
 
     // managers :
     // Sep. 1 this year to Mar. 1 next year
@@ -72,29 +83,24 @@ public final class DirectoryUserGroups {
     // all actions
     // all spaces
     ArrayList<Area> managerAreas = new ArrayList<>(Arrays.asList(
-            DirectoryAreas.findAreaById("building")
+        DirectoryAreas.findAreaById("building")
     ));
-
-    ArrayList<String> managerActions = new ArrayList<String>();
-    managerActions.add(Actions.UNLOCK_SHORTLY);
-    managerActions.add(Actions.UNLOCK);
-    managerActions.add(Actions.LOCK);
-    managerActions.add(Actions.OPEN);
-    managerActions.add(Actions.CLOSE);
-
-    UserGroup managerGroup = new UserGroup(managerAreas,
-            new LocalDateTime[]{LocalDate.of(2026, Month.SEPTEMBER, 1).atStartOfDay(),
-                    LocalDate.of(2027, Month.MARCH, 1).atStartOfDay()},
-            new int[]{0,5},
-            new int[]{8,20},
-            managerActions
+    ArrayList<String> managerActions = new ArrayList<>(Arrays.asList(
+        Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
+    ));
+    UserGroup managerGroup = new UserGroup(
+        "managers",
+        managerAreas,
+        LocalDate.of(2026, Month.SEPTEMBER, 1),
+        LocalDate.of(2027, Month.MARCH, 1),
+        monToSat,
+        LocalTime.of(8, 0),
+        LocalTime.of(20, 0),
+        managerActions
     );
-    managerGroup.addUser(new User("Manel", managerGroup,"95783" ));
-    managerGroup.addUser(new User("Marta", managerGroup,"05827"));
-
-    userGroups.add(
-            managerGroup
-    );
+    managerGroup.addUser(new User("Manel", managerGroup, "95783"));
+    managerGroup.addUser(new User("Marta", managerGroup, "05827"));
+    userGroups.add(managerGroup);
 
     // admin :
     // always=Jan. 1 this year to 2100
@@ -102,36 +108,33 @@ public final class DirectoryUserGroups {
     // all actions
     // all spaces
     ArrayList<Area> adminAreas = new ArrayList<>(Arrays.asList(
-            DirectoryAreas.findAreaById("building")
+        DirectoryAreas.findAreaById("building")
     ));
-
-    ArrayList<String> adminActions = new ArrayList<String>();
-    adminActions.add(Actions.UNLOCK_SHORTLY);
-    adminActions.add(Actions.UNLOCK);
-    adminActions.add(Actions.LOCK);
-    adminActions.add(Actions.OPEN);
-    adminActions.add(Actions.CLOSE);
-
-    UserGroup adminGroup = new UserGroup(adminAreas,
-            new LocalDateTime[]{LocalDate.of(2026, Month.JANUARY, 1).atStartOfDay(),
-                    LocalDate.of(2100, Month.JANUARY, 1).atStartOfDay()},
-            new int[]{0,7},
-            new int[]{0,24},
-            adminActions
-            );
-    adminGroup.addUser(new User("Ana", adminGroup,"11343"));
-    userGroups.add(
-            adminGroup
+    ArrayList<String> adminActions = new ArrayList<>(Arrays.asList(
+        Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
+    ));
+    UserGroup adminGroup = new UserGroup(
+        "admin",
+        adminAreas,
+        LocalDate.of(2026, Month.JANUARY, 1),
+        LocalDate.of(2100, Month.JANUARY, 1),
+        allDays,
+        LocalTime.of(0, 0),
+        LocalTime.of(23, 59),
+        adminActions
     );
+    adminGroup.addUser(new User("Ana", adminGroup, "11343"));
+    userGroups.add(adminGroup);
   }
 
   public static User findUserByCredential(String credential) {
-    for (UserGroup userGroup : userGroups ){
+    for (UserGroup userGroup : userGroups) {
       User user = userGroup.findUserByCredential(credential);
-      if (user != null){
+      if (user != null) {
         return user;
       }
     }
-    return null;
+    System.out.println("user with credential " + credential + " not found");
+    return null; // otherwise we get a Java error
   }
 }
