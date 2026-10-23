@@ -35,14 +35,19 @@ public final class DirectoryUserGroups {
     ArrayList<String> emptyActions = new ArrayList<>();
 
     // can access nowhere, do nothing, never
+
+    Schedule blankGroupSchedule = new Schedule(
+            LocalDate.of(2026, Month.JANUARY, 1),
+            LocalDate.of(2026, Month.JANUARY, 1),
+            new ArrayList<>(),
+            LocalTime.of(0, 0),
+            LocalTime.of(0, 0)
+    );
+
     UserGroup blankGroup = new UserGroup(
         "blank",
         noAreas,
-        LocalDate.of(2026, Month.JANUARY, 1),
-        LocalDate.of(2026, Month.JANUARY, 1),
-        new ArrayList<>(),
-        LocalTime.of(0, 0),
-        LocalTime.of(0, 0),
+        blankGroupSchedule,
         emptyActions
     );
     blankGroup.addUser(new User("Bernat", blankGroup, "12345"));
@@ -63,14 +68,19 @@ public final class DirectoryUserGroups {
     ArrayList<String> employeeActions = new ArrayList<>(Arrays.asList(
         Actions.OPEN, Actions.CLOSE, Actions.UNLOCK_SHORTLY
     ));
+
+    Schedule employeeSchedule = new Schedule(
+            LocalDate.of(2026, Month.SEPTEMBER, 1),
+            LocalDate.of(2027, Month.MARCH, 1),
+            monToFri,
+            LocalTime.of(9, 0),
+            LocalTime.of(17, 0)
+    );
+
     UserGroup employeeGroup = new UserGroup(
         "employees",
         employeeAreas,
-        LocalDate.of(2026, Month.SEPTEMBER, 1),
-        LocalDate.of(2027, Month.MARCH, 1),
-        monToFri,
-        LocalTime.of(9, 0),
-        LocalTime.of(17, 0),
+        employeeSchedule,
         employeeActions
     );
     employeeGroup.addUser(new User("Ernest", employeeGroup, "74984"));
@@ -88,14 +98,19 @@ public final class DirectoryUserGroups {
     ArrayList<String> managerActions = new ArrayList<>(Arrays.asList(
         Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
     ));
+
+    Schedule managerSchedule = new Schedule(
+            LocalDate.of(2026, Month.SEPTEMBER, 1),
+            LocalDate.of(2027, Month.MARCH, 1),
+            monToSat,
+            LocalTime.of(8, 0),
+            LocalTime.of(20, 0)
+    );
+
     UserGroup managerGroup = new UserGroup(
         "managers",
         managerAreas,
-        LocalDate.of(2026, Month.SEPTEMBER, 1),
-        LocalDate.of(2027, Month.MARCH, 1),
-        monToSat,
-        LocalTime.of(8, 0),
-        LocalTime.of(20, 0),
+        managerSchedule,
         managerActions
     );
     managerGroup.addUser(new User("Manel", managerGroup, "95783"));
@@ -113,14 +128,18 @@ public final class DirectoryUserGroups {
     ArrayList<String> adminActions = new ArrayList<>(Arrays.asList(
         Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
     ));
+    Schedule adminSchedule = new Schedule(
+            LocalDate.of(2026, Month.JANUARY, 1),
+            LocalDate.of(2100, Month.JANUARY, 1),
+            allDays,
+            LocalTime.of(0, 0),
+            LocalTime.of(23, 59)
+    );
+
     UserGroup adminGroup = new UserGroup(
         "admin",
         adminAreas,
-        LocalDate.of(2026, Month.JANUARY, 1),
-        LocalDate.of(2100, Month.JANUARY, 1),
-        allDays,
-        LocalTime.of(0, 0),
-        LocalTime.of(23, 59),
+        adminSchedule,
         adminActions
     );
     adminGroup.addUser(new User("Ana", adminGroup, "11343"));

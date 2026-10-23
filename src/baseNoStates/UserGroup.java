@@ -19,41 +19,20 @@ public class UserGroup {
   private final String name;
   private final ArrayList<User> users = new ArrayList<>();
   private final ArrayList<Area> areas;
-  private final LocalDate fromDate;
-  private final LocalDate toDate;
-  private final ArrayList<DayOfWeek> daysOfWeek;
-  private final LocalTime fromTime;
-  private final LocalTime toTime;
   private final ArrayList<String> actions;
+  private Schedule schedule; //the schedule must be modifiable
 
-  public UserGroup(String name, ArrayList<Area> areas,
-                   LocalDate fromDate, LocalDate toDate,
-                   ArrayList<DayOfWeek> daysOfWeek,
-                   LocalTime fromTime, LocalTime toTime,
-                   ArrayList<String> actions) {
+  public UserGroup(String name, ArrayList<Area> areas, Schedule schedule,ArrayList<String> actions) {
     this.name = name;
     this.areas = areas;
-    this.fromDate = fromDate;
-    this.toDate = toDate;
-    this.daysOfWeek = daysOfWeek;
-    this.fromTime = fromTime;
-    this.toTime = toTime;
+    this.schedule = schedule;
     this.actions = actions;
   }
 
   // Validates whether a given timestamp falls within the group's schedule (dates, weekday, hours)
   public boolean canSendRequests(LocalDateTime now) {
-    LocalDate currentDate = now.toLocalDate();
-    LocalTime currentTime = now.toLocalTime();
-    DayOfWeek currentDay = now.getDayOfWeek();
-
-    boolean validDate = !currentDate.isBefore(fromDate) && !currentDate.isAfter(toDate);
-    boolean validDay = daysOfWeek.contains(currentDay);
-    boolean validTime = !currentTime.isBefore(fromTime) && !currentTime.isAfter(toTime);
-
-    return validDate && validDay && validTime;
+    return schedule.includes(now);
   }
-
   public boolean canDoAction(String action) {
     return actions.contains(action);
   }
