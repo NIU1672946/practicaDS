@@ -6,13 +6,31 @@ import java.util.Arrays;
 /*
  * Directory class that instantiates and holds the hierarchical tree of areas
  * (partitions and spaces, via rootArea) as well as the list of all doors in the building.
- * Provides static lookup methods to find any area or door by its unique identifier.
+ *
+ * Design Pattern: Singleton.
+ * Why: This class acts as the central in-memory database for areas and doors.
+ * We need to guarantee that only one instance of this directory exists during
+ * the entire execution of the ACU server, providing a single global point of access.
  */
 public final class DirectoryAreas {
-  private static Area rootArea;
-  private static ArrayList<Door> allDoors;
+  private Area rootArea;
+  private final ArrayList<Door> allDoors;
 
-  public static void makeAreas() {
+  // implementation of the Singleton pattern
+  private static DirectoryAreas uniqueInstance = null;
+
+  private DirectoryAreas() {
+    allDoors = new ArrayList<>();
+  }
+
+  public static DirectoryAreas getInstance() {
+    if (uniqueInstance == null) {
+      uniqueInstance = new DirectoryAreas();
+    }
+    return uniqueInstance;
+  }
+
+  public void makeAreas() {
     // Creation of partitions (composite nodes of the hierarchy tree)
     Partition building = new Partition("building", "whole building", null);
     Partition basement = new Partition("basement", "basement floor", building);
@@ -54,14 +72,15 @@ public final class DirectoryAreas {
     Door d8 = new Door("D8", corridor, room3);   // corridor, room3
     Door d9 = new Door("D9", corridor, it);      // corridor, IT
 
-    allDoors = new ArrayList<>(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8, d9));
+    allDoors.clear();
+    allDoors.addAll(Arrays.asList(d1, d2, d3, d4, d5, d6, d7, d8, d9));
   }
 
-  public static Area findAreaById(String id) {
+  public Area findAreaById(String id) {
     return rootArea.findAreaById(id); // an Area or null if not found
   }
 
-  public static Door findDoorById(String id) {
+  public Door findDoorById(String id) {
     for (Door door : allDoors) {
       if (door.getId().equals(id)) {
         return door;
@@ -72,7 +91,7 @@ public final class DirectoryAreas {
   }
 
   // this is needed by RequestRefresh
-  public static ArrayList<Door> getAllDoors() {
+  public ArrayList<Door> getAllDoors() {
     System.out.println(allDoors);
     return allDoors;
   }

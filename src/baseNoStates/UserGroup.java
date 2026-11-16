@@ -22,7 +22,7 @@ public class UserGroup {
   private final ArrayList<String> actions;
   private Schedule schedule; //the schedule must be modifiable
 
-  public UserGroup(String name, ArrayList<Area> areas, Schedule schedule,ArrayList<String> actions) {
+  public UserGroup(String name, ArrayList<Area> areas, Schedule schedule, ArrayList<String> actions) {
     this.name = name;
     this.areas = areas;
     this.schedule = schedule;

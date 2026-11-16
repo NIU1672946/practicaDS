@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
  */
 public class Main {
   public static void main(String[] args) {
-    DirectoryAreas.makeAreas();
+    DirectoryAreas.getInstance().makeAreas();
     //DirectoryUsers.makeUsers();
-    DirectoryUserGroups.makeUserGroups();
+    DirectoryUserGroups.getInstance().makeUserGroups();
 
 
     //Clock c = new Clock(1);

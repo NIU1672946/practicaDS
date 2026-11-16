@@ -70,7 +70,7 @@ public class RequestArea implements Request {
   public void process() {
     // make the door requests and put them into the area request to be authorized later and
     // processed later
-    Area area = DirectoryAreas.findAreaById(areaId);
+    Area area = DirectoryAreas.getInstance().findAreaById(areaId);
     // an Area is a Space or a Partition
     if (area != null) {
       // is null when from the app we click on an action but no place is selected because

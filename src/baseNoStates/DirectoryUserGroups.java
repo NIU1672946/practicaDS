@@ -11,11 +11,32 @@ import java.util.Arrays;
  * Directory class responsible for creating and storing all UserGroup instances
  * (blank, employees, managers, admin) along with their assigned users, areas,
  * allowed actions, and schedules. Also provides user lookup by credential.
+ *
+ * Design Pattern: Singleton.
+ * Why: This class acts as the central in-memory database for user credentials and
+ * permissions. We need to guarantee that only one instance of this directory exists
+ * during the execution of the ACU server, providing a single global point of access
+ * and preventing multiple conflicting states of user groups.
  */
-public final class DirectoryUserGroups {
-  private static final ArrayList<UserGroup> userGroups = new ArrayList<>();
 
-  public static void makeUserGroups() {
+public final class DirectoryUserGroups {
+  private final ArrayList<UserGroup> userGroups;
+
+  // implementation of the Singleton pattern
+  private static DirectoryUserGroups uniqueInstance = null;
+
+  private DirectoryUserGroups() {
+    userGroups = new ArrayList<>();
+  }
+
+  public static DirectoryUserGroups getInstance() {
+    if (uniqueInstance == null) {
+      uniqueInstance = new DirectoryUserGroups();
+    }
+    return uniqueInstance;
+  }
+
+  public void makeUserGroups() {
     userGroups.clear();
 
     ArrayList<DayOfWeek> monToFri = new ArrayList<>(Arrays.asList(
@@ -60,10 +81,10 @@ public final class DirectoryUserGroups {
     // open, close, and shortly unlock
     // ground floor, floor1, exterior, stairs (this, for all), that is, everywhere but the parking
     ArrayList<Area> employeeAreas = new ArrayList<>(Arrays.asList(
-        DirectoryAreas.findAreaById("ground_floor"),
-        DirectoryAreas.findAreaById("floor1"),
-        DirectoryAreas.findAreaById("exterior"),
-        DirectoryAreas.findAreaById("stairs")
+        DirectoryAreas.getInstance().findAreaById("ground_floor"),
+        DirectoryAreas.getInstance().findAreaById("floor1"),
+        DirectoryAreas.getInstance().findAreaById("exterior"),
+        DirectoryAreas.getInstance().findAreaById("stairs")
     ));
     ArrayList<String> employeeActions = new ArrayList<>(Arrays.asList(
         Actions.OPEN, Actions.CLOSE, Actions.UNLOCK_SHORTLY
@@ -93,7 +114,7 @@ public final class DirectoryUserGroups {
     // all actions
     // all spaces
     ArrayList<Area> managerAreas = new ArrayList<>(Arrays.asList(
-        DirectoryAreas.findAreaById("building")
+        DirectoryAreas.getInstance().findAreaById("building")
     ));
     ArrayList<String> managerActions = new ArrayList<>(Arrays.asList(
         Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
@@ -123,7 +144,7 @@ public final class DirectoryUserGroups {
     // all actions
     // all spaces
     ArrayList<Area> adminAreas = new ArrayList<>(Arrays.asList(
-        DirectoryAreas.findAreaById("building")
+        DirectoryAreas.getInstance().findAreaById("building")
     ));
     ArrayList<String> adminActions = new ArrayList<>(Arrays.asList(
         Actions.UNLOCK_SHORTLY, Actions.UNLOCK, Actions.LOCK, Actions.OPEN, Actions.CLOSE
@@ -146,7 +167,7 @@ public final class DirectoryUserGroups {
     userGroups.add(adminGroup);
   }
 
-  public static User findUserByCredential(String credential) {
+  public User findUserByCredential(String credential) {
     for (UserGroup userGroup : userGroups) {
       User user = userGroup.findUserByCredential(credential);
       if (user != null) {
