@@ -12,6 +12,11 @@ import java.util.TimerTask;
  * Instead of pausing the main execution thread with Thread.sleep(10000) (which would freeze
  * the ACU server and prevent it from processing other requests), this clock ticks periodically
  * every 'period' seconds and notifies all subscribed UnlockedShortly observers of the current time.
+ *
+ * Design Pattern: Singleton.
+ * Why: We only need one global clock running in the background for the entire ACU.
+ * If multiple clocks were instantiated, we would waste threads and could trigger
+ * overlapping or desynchronized time events.
  */
 @SuppressWarnings("deprecation")
 public class Clock extends Observable {
@@ -19,12 +24,22 @@ public class Clock extends Observable {
   private final Timer timer;
   private final int period; // seconds
 
-  public Clock(int period) {
+  // implementation of the Singleton pattern
+  private static Clock uniqueInstance = null;
+
+  private Clock(int period) {
     this.period = period;
     this.timer = new Timer(true);
   }
 
-  public Clock() {
+  public static Clock getInstance() {
+    if (uniqueInstance == null) {
+      uniqueInstance = new Clock(1);
+    }
+    return uniqueInstance;
+  }
+
+  private Clock() {
     this(1);
   }
 

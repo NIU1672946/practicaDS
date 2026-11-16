@@ -20,7 +20,7 @@ import java.util.Observer;
 public class UnlockedShortly extends DoorState implements Observer {
   private static final int TIME_TO_TRANSITION = 10; // maximum duration in seconds
   // A unique clock is shared by all UnlockedShortly instances because it is static
-  private static final Clock clock = new Clock(1);
+  private static final Clock clock = Clock.getInstance();
   private static boolean clockStarted = false;
 
   private final LocalDateTime t0;
