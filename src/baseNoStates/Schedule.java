@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 
-//new class to handle schedules comparision and not overload user groups with too much attributes referencing time of day and weekdays.
+//new class to handle schedules comparison and not overload user groups with too much attributes referencing time of day and weekdays.
 
 public class Schedule {
     private final LocalDate fromDate;
@@ -28,7 +28,7 @@ public class Schedule {
 
     }
 
-    public boolean includes(LocalDateTime now ){//verifies if a instant is included inside the schedule
+    public boolean includes(LocalDateTime now ){//verifies if an instant is included inside the schedule
         LocalDate currentDate = now.toLocalDate();
         LocalTime currentTime = now.toLocalTime();
         DayOfWeek currentDay = now.getDayOfWeek();

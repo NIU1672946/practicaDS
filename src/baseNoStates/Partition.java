@@ -20,15 +20,6 @@ public class Partition extends Area{
   }
 
   @Override
-  public  ArrayList<Door> getDoorsGivingAccess(){
-    ArrayList<Door> doorsGivingAccess = new ArrayList<>();
-    for (Area area : areas){
-      doorsGivingAccess.addAll(area.getDoorsGivingAccess());
-    }
-    return doorsGivingAccess;
-  }
-
-  @Override
   public  Area findAreaById(String id){
     if (this.id.equals(id)) {
       return this;
@@ -49,5 +40,13 @@ public class Partition extends Area{
     }
     return spaces;
   }
+  
+  public ArrayList<Area> getAreas() {
+    return areas;
+  }
 
+  @Override
+  public ArrayList<Door> accept(AreaVisitor visitor) {
+    return visitor.visitPartition(this);
+  }
 }

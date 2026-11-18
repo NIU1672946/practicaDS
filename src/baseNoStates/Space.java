@@ -24,8 +24,7 @@ public class Space extends Area{
     doors.add(door);
   }
 
-  @Override
-  public ArrayList<Door> getDoorsGivingAccess(){
+  public ArrayList<Door> getDoors() {
     return doors;
   }
 
@@ -40,5 +39,10 @@ public class Space extends Area{
   @Override
   public  ArrayList<Space> getSpaces(){
     return new ArrayList<>(Arrays.asList(this));
+  }
+
+  @Override
+  public ArrayList<Door> accept(AreaVisitor visitor) {
+    return visitor.visitSpace(this);
   }
 }

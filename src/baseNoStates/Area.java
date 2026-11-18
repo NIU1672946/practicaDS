@@ -25,14 +25,14 @@ public abstract class Area {
   public String getId() {
     return id;
   }
-  // Returns the list of doors that give access to some space within this area
-  public abstract ArrayList<Door> getDoorsGivingAccess();
 
   // Recursively searches the area tree for a node with the given id
   public abstract Area findAreaById(String id);
 
   // Returns all individual spaces contained within this area to check user permissions
   public abstract ArrayList<Space> getSpaces();
+
+  public abstract ArrayList<Door> accept(AreaVisitor visitor);
 }
 
 
