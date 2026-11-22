@@ -17,20 +17,14 @@ public class Main {
     DirectoryUserGroups.getInstance().makeUserGroups();
 
 
-    //Clock c = new Clock(1);
-
-    //c.start();
-    //LocalDateTime a = c.getDate();
-    //LocalDateTime b = c.getDate();
-
-    //System.out.println("TEMPS:");
-    //System.out.println(a);
-
-
-
     new WebServer();
 
 
 
   }
 }
+
+
+//To see where the style rules are broken,
+//Analyze → Inspect code... and two new tabs Inspection results
+//and Checkstyle will appear at the bottom.

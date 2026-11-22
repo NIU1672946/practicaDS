@@ -1,0 +1,16 @@
+<configuration>
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+        <Marker>MILESTONE_1</Marker>
+        <OnMatch>ACCEPT</OnMatch>
+        <OnMismatch>ACCEPT</OnMismatch>
+    </turboFilter>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder> <pattern>
+            %d{HH:mm:ss} [%thread] %-5level [%marker] %logger{36} - %msg%n
+        </pattern> </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
