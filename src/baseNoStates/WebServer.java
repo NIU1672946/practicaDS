@@ -107,7 +107,7 @@ public class WebServer {
             logger.info(Markers.MILESTONE_1,"processed request " + typeRequest + " " + request);
             // Make the answer as a JSON string, to be sent to the Javascript client
             String answer = makeJsonAnswer(request);
-            logger.info(Markers.MILESTONE_1,"answer\n" + answer);
+            logger.info(Markers.MILESTONE_1,"answer:+++\n" + answer);
             // Here we send the response to the client
             out.println(answer);
             out.flush(); // flush character output stream buffer
