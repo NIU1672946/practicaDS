@@ -1,8 +1,15 @@
 <configuration>
+
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <Marker>MILESTONE_1</Marker>
-        <OnMatch>ACCEPT</OnMatch>
-        <OnMismatch>ACCEPT</OnMismatch>
+        <!--<Marker>MILESTONE_1</Marker> -->
+        <!--<OnMatch>ACCEPT</OnMatch> -->
+        <!-- <OnMismatch>DENY</OnMismatch> -->
+
+
+        <!--<Marker>MILESTONE_2</Marker> -->
+        <!--<OnMatch>ACCEPT</OnMatch> -->
+        <!-- <OnMismatch>DENY</OnMismatch> -->
+
     </turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -10,7 +17,32 @@
             %d{HH:mm:ss} [%thread] %-5level [%marker] %logger{36} - %msg%n
         </pattern> </encoder>
     </appender>
-    <root level="info">
+
+    <appender name="GENERAL_LOGS_FILE" class="ch.qos.logback.core.FileAppender">
+        <append>true</append> <!-- default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
+                %msg%n</pattern>
+        </encoder>
+        <file>general_logs.html</file>
+    </appender>
+
+    <appender name="WEB_SERVER_LOGS_FILE" class="ch.qos.logback.core.FileAppender">
+        <append>true</append> <!-- default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
+                %msg%n</pattern>
+        </encoder>
+        <file>web_server_logs.html</file>
+    </appender>
+
+    <logger name = "baseNoStates.WebServer">
+       <appender-ref ref = "WEB_SERVER_LOGS_FILE"/>
+    </logger>
+
+    <root level="debug">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="GENERAL_LOGS_FILE" />
     </root>
+
 </configuration>

@@ -3,6 +3,9 @@ package baseNoStates;
 import baseNoStates.requests.RequestReader;
 import org.json.JSONObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * Represents a physical door controlled by the ACS.
  * Acts as the Context class in the State design pattern: it holds a reference to its
@@ -18,6 +21,8 @@ public class Door {
   private DoorState state;
   private final Space fromSpace;
   private final Space toSpace;
+
+  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Door");
 
   public Door(String id, Space fromSpace, Space toSpace) {
     this.id = id;
@@ -36,7 +41,8 @@ public class Door {
       String action = request.getAction();
       doAction(action);
     } else {
-      System.out.println("not authorized");
+      String msg = "not authorized";
+      logger.warn(Markers.MILESTONE_1,msg);
     }
     request.setDoorStateName(getStateName());
   }

@@ -1,0 +1,466 @@
+17:15:05.309 [main] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                Server started.
+Listening for connections on port : 8081 ...
+
+17:15:10.746 [Thread-0] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /refresh HTTP/1.1
+17:15:10.749 [Thread-0] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /refresh HTTP/1.1
+method GET
+resource /refresh
+
+17:15:10.752 [Thread-0] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 refresh
+
+17:15:10.752 [Thread-0] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : refresh, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
+17:15:10.755 [Thread-0] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request refresh RequestRefresh{[]}
+17:15:10.757 [Thread-0] DEBUG [MILESTONE_1] baseNoStates.Unlocked -
+                Door{, id='D1', closed=true, state=unlocked}
+Door{, id='D2', closed=true, state=unlocked}
+Door{, id='D3', closed=true, state=unlocked}
+Door{, id='D4', closed=true, state=unlocked}
+Door{, id='D5', closed=true, state=unlocked}
+Door{, id='D6', closed=true, state=unlocked}
+Door{, id='D7', closed=true, state=unlocked}
+Door{, id='D8', closed=true, state=unlocked}
+Door{, id='D9', closed=true, state=unlocked}
+
+17:15:10.764 [Thread-0] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request refresh RequestRefresh{[{"closed":true,"id":"D1","state":"unlocked"}, {"closed":true,"id":"D2","state":"unlocked"}, {"closed":true,"id":"D3","state":"unlocked"}, {"closed":true,"id":"D4","state":"unlocked"}, {"closed":true,"id":"D5","state":"unlocked"}, {"closed":true,"id":"D6","state":"unlocked"}, {"closed":true,"id":"D7","state":"unlocked"}, {"closed":true,"id":"D8","state":"unlocked"}, {"closed":true,"id":"D9","state":"unlocked"}]}
+17:15:10.771 [Thread-0] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"doors":[{"closed":true,"id":"D1","state":"unlocked"},{"closed":true,"id":"D2","state":"unlocked"},{"closed":true,"id":"D3","state":"unlocked"},{"closed":true,"id":"D4","state":"unlocked"},{"closed":true,"id":"D5","state":"unlocked"},{"closed":true,"id":"D6","state":"unlocked"},{"closed":true,"id":"D7","state":"unlocked"},{"closed":true,"id":"D8","state":"unlocked"},{"closed":true,"id":"D9","state":"unlocked"}]}
+17:17:04.673 [Thread-1] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:17:04.676 [Thread-1] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2
+
+17:17:04.677 [Thread-1] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 open
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:17:04.679 [Thread-1] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, open, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:17:04.699 [Thread-1] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=open, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:17:04.701 [Thread-1] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=open, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:17:04.702 [Thread-1] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"open","closed":false,"state":"unlocked","doorId":"D2"}
+17:17:05.682 [Thread-2] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:17:05.684 [Thread-2] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=open&datetime=2026-11-22T09:30&doorId=D2
+
+17:17:05.685 [Thread-2] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 open
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:17:05.686 [Thread-2] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, open, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:17:05.687 [Thread-2] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=open, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:17:05.688 [Thread-2] INFO  [MILESTONE_1] baseNoStates.Unlocked -
+                Can't open door D2 because it's already open
+17:17:05.689 [Thread-2] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=open, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:17:05.690 [Thread-2] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"open","closed":false,"state":"unlocked","doorId":"D2"}
+17:17:09.420 [Thread-3] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:17:09.421 [Thread-3] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:17:09.422 [Thread-3] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:17:09.422 [Thread-3] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:17:09.423 [Thread-3] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:17:09.423 [Thread-3] INFO  [MILESTONE_1] baseNoStates.Unlocked -
+                Can't lock door D2 because it's open
+17:17:09.424 [Thread-3] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:17:09.425 [Thread-3] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:22:34.643 [Thread-4] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=00112&action=unlock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:22:34.645 [Thread-4] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=00112&action=unlock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=00112&action=unlock&datetime=2026-11-22T09:30&doorId=D2
+
+17:22:34.645 [Thread-4] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 00112
+3 action
+4 unlock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:22:34.645 [Thread-4] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 00112, action, unlock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:22:34.645 [Thread-4] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=00112, userName=unknown, action=unlock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:22:34.645 [Thread-4] WARN  [MILESTONE_1] baseNoStates.DirectoryUserGroups -
+                user with credential 00112 not found
+17:22:34.645 [Thread-4] WARN  [MILESTONE_1] baseNoStates.Door -
+                not authorized
+17:22:34.645 [Thread-4] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=00112, userName=unknown, action=unlock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[user doesn't exists]}
+17:22:34.645 [Thread-4] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":["user doesn't exists"],"authorized":false,"action":"unlock","closed":false,"state":"unlocked","doorId":"D2"}
+17:22:41.739 [Thread-5] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=00112&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:22:41.739 [Thread-5] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=00112&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=00112&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:22:41.740 [Thread-5] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 00112
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:22:41.741 [Thread-5] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 00112, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:22:41.741 [Thread-5] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=00112, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:22:41.741 [Thread-5] WARN  [MILESTONE_1] baseNoStates.DirectoryUserGroups -
+                user with credential 00112 not found
+17:22:41.744 [Thread-5] WARN  [MILESTONE_1] baseNoStates.Door -
+                not authorized
+17:22:41.744 [Thread-5] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=00112, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[user doesn't exists]}
+17:22:41.744 [Thread-5] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":["user doesn't exists"],"authorized":false,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:22:46.865 [Thread-6] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=12345&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:22:46.865 [Thread-6] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=12345&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=12345&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:22:46.865 [Thread-6] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 12345
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:22:46.865 [Thread-6] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 12345, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:22:46.865 [Thread-6] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=12345, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:22:46.865 [Thread-6] WARN  [MILESTONE_1] baseNoStates.Door -
+                not authorized
+17:22:46.865 [Thread-6] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=12345, userName=Bernat, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[user can't be in fromSpace stairs, user can't be in toSpace parking, user can't send requests now. (Now is 2026-11-22T09:30 ), user can't do action lock]}
+17:22:46.865 [Thread-6] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":["user can't be in fromSpace stairs","user can't be in toSpace parking","user can't send requests now. (Now is 2026-11-22T09:30 )","user can't do action lock"],"authorized":false,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:22:56.420 [Thread-7] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=95783&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:22:56.420 [Thread-7] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=95783&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=95783&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:22:56.420 [Thread-7] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 95783
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:22:56.420 [Thread-7] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 95783, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:22:56.420 [Thread-7] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=95783, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:22:56.420 [Thread-7] WARN  [MILESTONE_1] baseNoStates.Door -
+                not authorized
+17:22:56.420 [Thread-7] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=95783, userName=Manel, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[user can't send requests now. (Now is 2026-11-22T09:30 )]}
+17:22:56.430 [Thread-7] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":["user can't send requests now. (Now is 2026-11-22T09:30 )"],"authorized":false,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:23:04.613 [Thread-8] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:23:04.618 [Thread-8] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.Unlocked -
+                Can't lock door D2 because it's open
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:23:04.618 [Thread-8] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:23:10.376 [Thread-9] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:23:10.377 [Thread-9] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:23:10.377 [Thread-9] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:23:10.378 [Thread-9] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:10.379 [Thread-9] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:23:10.380 [Thread-9] INFO  [MILESTONE_1] baseNoStates.Unlocked -
+                Can't lock door D2 because it's open
+17:23:10.380 [Thread-9] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:23:10.381 [Thread-9] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:23:16.124 [Thread-10] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /refresh HTTP/1.1
+17:23:16.125 [Thread-10] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /refresh HTTP/1.1
+method GET
+resource /refresh
+
+17:23:16.126 [Thread-10] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 refresh
+
+17:23:16.129 [Thread-10] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : refresh, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:16.130 [Thread-10] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request refresh RequestRefresh{[]}
+17:23:16.130 [Thread-10] DEBUG [MILESTONE_1] baseNoStates.Unlocked -
+                Door{, id='D1', closed=true, state=unlocked}
+Door{, id='D2', closed=false, state=unlocked}
+Door{, id='D3', closed=true, state=unlocked}
+Door{, id='D4', closed=true, state=unlocked}
+Door{, id='D5', closed=true, state=unlocked}
+Door{, id='D6', closed=true, state=unlocked}
+Door{, id='D7', closed=true, state=unlocked}
+Door{, id='D8', closed=true, state=unlocked}
+Door{, id='D9', closed=true, state=unlocked}
+
+17:23:16.131 [Thread-10] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request refresh RequestRefresh{[{"closed":true,"id":"D1","state":"unlocked"}, {"closed":false,"id":"D2","state":"unlocked"}, {"closed":true,"id":"D3","state":"unlocked"}, {"closed":true,"id":"D4","state":"unlocked"}, {"closed":true,"id":"D5","state":"unlocked"}, {"closed":true,"id":"D6","state":"unlocked"}, {"closed":true,"id":"D7","state":"unlocked"}, {"closed":true,"id":"D8","state":"unlocked"}, {"closed":true,"id":"D9","state":"unlocked"}]}
+17:23:16.133 [Thread-10] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"doors":[{"closed":true,"id":"D1","state":"unlocked"},{"closed":false,"id":"D2","state":"unlocked"},{"closed":true,"id":"D3","state":"unlocked"},{"closed":true,"id":"D4","state":"unlocked"},{"closed":true,"id":"D5","state":"unlocked"},{"closed":true,"id":"D6","state":"unlocked"},{"closed":true,"id":"D7","state":"unlocked"},{"closed":true,"id":"D8","state":"unlocked"},{"closed":true,"id":"D9","state":"unlocked"}]}
+17:23:17.263 [Thread-11] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:23:17.263 [Thread-11] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:23:17.265 [Thread-11] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:23:17.266 [Thread-11] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:17.267 [Thread-11] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:23:17.268 [Thread-11] INFO  [MILESTONE_1] baseNoStates.Unlocked -
+                Can't lock door D2 because it's open
+17:23:17.269 [Thread-11] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=true, reasons=[]}
+17:23:17.269 [Thread-11] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"lock","closed":false,"state":"unlocked","doorId":"D2"}
+17:23:20.635 [Thread-12] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=close&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:23:20.636 [Thread-12] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=close&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=close&datetime=2026-11-22T09:30&doorId=D2
+
+17:23:20.636 [Thread-12] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 close
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:23:20.649 [Thread-12] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, close, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:20.650 [Thread-12] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=close, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:23:20.651 [Thread-12] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=close, now=2026-11-22T09:30, doorID=D2, closed=true, authorized=true, reasons=[]}
+17:23:20.653 [Thread-12] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"close","closed":true,"state":"unlocked","doorId":"D2"}
+17:23:23.354 [Thread-13] WARN  [MILESTONE_1] baseNoStates.WebServer -
+                sockedthread : GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+17:23:23.354 [Thread-13] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                input GET /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2 HTTP/1.1
+method GET
+resource /reader?credential=11343&action=lock&datetime=2026-11-22T09:30&doorId=D2
+
+17:23:23.354 [Thread-13] DEBUG [MILESTONE_1] baseNoStates.WebServer -
+                0 reader
+1 credential
+2 11343
+3 action
+4 lock
+5 datetime
+6 2026-11-22T09:30
+7 doorId
+8 D2
+
+17:23:23.354 [Thread-13] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                tokens : reader, credential, 11343, action, lock, datetime, 2026-11-22T09:30, doorId, D2, null, null, null, null, null, null, null, null, null, null, null, 
+17:23:23.355 [Thread-13] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                created request reader Request{credential=11343, userName=unknown, action=lock, now=2026-11-22T09:30, doorID=D2, closed=false, authorized=false, reasons=[]}
+17:23:23.358 [Thread-13] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                processed request reader Request{credential=11343, userName=Ana, action=lock, now=2026-11-22T09:30, doorID=D2, closed=true, authorized=true, reasons=[]}
+17:23:23.358 [Thread-13] INFO  [MILESTONE_1] baseNoStates.WebServer -
+                answer
+HTTP/1.0 200 OK
+Content-type: application/json
+Access-Control-Allow-Origin: *
+
+{"reasons":[],"authorized":true,"action":"lock","closed":true,"state":"locked","doorId":"D2"}

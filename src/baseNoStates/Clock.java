@@ -51,7 +51,6 @@ public class Clock extends Observable {
         date = LocalDateTime.now();
         setChanged();
         notifyObservers(date); // update all subscribed UnlockedShortly observers
-        // System.out.println("run() executed at " + date);
       }
     };
 

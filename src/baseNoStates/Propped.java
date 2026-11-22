@@ -1,5 +1,8 @@
 package baseNoStates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * Concrete state of the State design pattern representing a propped door.
  * A door enters this alarm state when it was unlocked shortly, opened, and left open
@@ -8,6 +11,8 @@ package baseNoStates;
  * closed (close action), it automatically returns to the Locked state.
  */
 public class Propped extends DoorState {
+    private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Propped");
+
     public Propped(Door door) {
         super(door);
         this.name = States.PROPPED;
@@ -15,7 +20,9 @@ public class Propped extends DoorState {
     @Override
     public void open(){
         //it will always be open since the state Propped is only attainable from having an UnlockedShortly door be open.
-        System.out.println("Can't open door " + door.getId() + " because it's already open");
+        String msg = "Can't open door " + door.getId() + " because it's already open";
+        logger.info(Markers.MILESTONE_1,msg);
+
     }
 
     @Override
@@ -31,11 +38,13 @@ public class Propped extends DoorState {
 
     @Override
     public void unlock(){
-        System.out.println("Can't unlock door " + door.getId() + "because it's propped");
+        String msg = "Can't unlock door " + door.getId() + "because it's propped";
+        logger.info(Markers.MILESTONE_1,msg);
 
     }
     @Override
     public void unlockShortly(){
-        System.out.println("Can't unlock shortly door " + door.getId() + "because it's propped");
+        String msg = "Can't unlock shortly door " + door.getId() + "because it's propped";
+        logger.info(Markers.MILESTONE_1,msg);
     }
 }
