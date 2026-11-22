@@ -77,7 +77,9 @@ public final class DirectoryAreas {
   }
 
   public Area findAreaById(String id) {
-    return rootArea.findAreaById(id); // an Area or null if not found
+    IdFindingVisitor visitor = new IdFindingVisitor(id);
+    rootArea.accept(visitor);
+    return visitor.getResult(); // an Area or null if not found
   }
 
   public Door findDoorById(String id) {

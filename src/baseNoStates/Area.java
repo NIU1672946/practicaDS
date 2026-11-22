@@ -26,13 +26,10 @@ public abstract class Area {
     return id;
   }
 
-  // Recursively searches the area tree for a node with the given id
-  public abstract Area findAreaById(String id);
-
   // Returns all individual spaces contained within this area to check user permissions
   public abstract ArrayList<Space> getSpaces();
 
-  public abstract ArrayList<Door> accept(AreaVisitor visitor);
+  public abstract void accept(AreaVisitor visitor);
 }
 
 

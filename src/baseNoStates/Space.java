@@ -29,20 +29,12 @@ public class Space extends Area{
   }
 
   @Override
-  public Area findAreaById(String id){
-    if (this.id.equals(id)) {
-      return this;
-    }
-    return null;
-  }
-
-  @Override
-  public  ArrayList<Space> getSpaces(){
+  public ArrayList<Space> getSpaces(){
     return new ArrayList<>(Arrays.asList(this));
   }
 
   @Override
-  public ArrayList<Door> accept(AreaVisitor visitor) {
-    return visitor.visitSpace(this);
+  public void accept(AreaVisitor visitor) {
+    visitor.visitSpace(this);
   }
 }
