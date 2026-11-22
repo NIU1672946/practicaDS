@@ -1,5 +1,8 @@
 package baseNoStates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Observable;
@@ -25,6 +28,8 @@ public class UnlockedShortly extends DoorState implements Observer {
 
   private final LocalDateTime t0;
 
+  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.UnlockedShortly");
+
   public UnlockedShortly(Door door) {
     super(door);
     this.name = States.UNLOCKED_SHORTLY;
@@ -41,14 +46,18 @@ public class UnlockedShortly extends DoorState implements Observer {
     if (door.isClosed()) {
       door.setClosed(false);
     } else {
-      System.out.println("Can't open door " + door.getId() + " because it's already open");
+
+      String msg = "Can't open door " + door.getId() + " because it's already open";
+      logger.info(Markers.MILESTONE_1,msg);
     }
   }
 
   @Override
   public void close() {
     if (door.isClosed()) {
-      System.out.println("Can't close door " + door.getId() + " because it's already closed");
+      String msg = "Can't close door " + door.getId() + " because it's already closed";
+      logger.info(Markers.MILESTONE_1,msg);
+
     } else {
       door.setClosed(true);
     }
@@ -56,18 +65,21 @@ public class UnlockedShortly extends DoorState implements Observer {
 
   @Override
   public void lock() {
-    System.out.println("Can't lock door " + door.getId() + " because it's unlocked shortly");
+    String msg = "Can't lock door " + door.getId() + " because it's unlocked shortly";
+    logger.info(Markers.MILESTONE_1,msg);
   }
 
   @Override
   public void unlock() {
-    System.out.println("Can't unlock door " + door.getId() + " because it's unlocked shortly");
+    String msg = "Can't unlock door " + door.getId() + " because it's unlocked shortly";
+    logger.info(Markers.MILESTONE_1,msg);
   }
 
   @Override
   public void unlockShortly() {
     // A door cannot be repeatedly unlocked shortly while it is already in this temporary state
-    System.out.println("Can't unlock shortly door " + door.getId() + " because it already is");
+    String msg = "Can't unlock shortly door " + door.getId() + " because it already is";
+    logger.info(Markers.MILESTONE_1,msg);
   }
 
   @Override

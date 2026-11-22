@@ -1,4 +1,8 @@
 package baseNoStates;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * Concrete state of the State design pattern representing an unlocked door.
  * When a door is in the Unlocked state, its bolt is retracted so anyone authorized
@@ -6,7 +10,7 @@ package baseNoStates;
  * to the Locked state upon receiving a lock action.
  */
 public class Unlocked extends DoorState{
-
+  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Unlocked");
   public Unlocked(Door door){
     super(door);
     this.name = States.UNLOCKED;
@@ -16,14 +20,17 @@ public class Unlocked extends DoorState{
     if (door.isClosed()){
       door.setClosed(false);
     } else {
-      System.out.println("Can't open door " + door.getId() + " because it's already open");
+      String msg = "Can't open door " + door.getId() + " because it's already open";
+      logger.info(Markers.MILESTONE_1,msg);
     }
   }
 
   @Override
   public void close(){
     if (door.isClosed()) {
-      System.out.println("Can't close door " + door.getId() + " because it's already closed");
+      String msg = "Can't close door " + door.getId() + " because it's already closed";
+      logger.info(Markers.MILESTONE_1,msg);
+
     } else {
       door.setClosed(true);
     }
@@ -36,18 +43,22 @@ public class Unlocked extends DoorState{
       door.setState(new Locked(door));
     }
     else {
-      System.out.println("Can't lock door " + door.getId() + " because it's open");
+      String msg = "Can't lock door " + door.getId() + " because it's open";
+      logger.info(Markers.MILESTONE_1,msg);
     }
   }
 
   @Override
   public void unlock() {
-    System.out.println("Can't unlock door " + door.getId() + " because it's already unlocked");
+    String msg = "Can't unlock door " + door.getId() + " because it's already unlocked";
+    logger.info(Markers.MILESTONE_1,msg);
+
   }
 
   @Override
   public void unlockShortly(){
-    System.out.println("Can't unlock shortly door " + door.getId() + "because it's unlocked");
+    String msg = "Can't unlock shortly door " + door.getId() + "because it's unlocked";
+    logger.info(Markers.MILESTONE_1,msg);
   }
 }
 
