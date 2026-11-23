@@ -22,7 +22,7 @@ var readerControl = document.getElementById("reader");
 var areaControl = document.getElementById("area");
 
 // address of the web server, what it listens to
-var baseUrl = "http://localhost:8000";
+var baseUrl = "http://localhost:8081";
 
 // initialize date control
 var now = new Date();

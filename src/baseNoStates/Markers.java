@@ -4,10 +4,9 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 /*
- * Defines SLF4J markers used to tag log messages by project milestone.
- * Combined with Logback's MarkerFilter in logback.xml, these markers let developers
- * toggle logging between Milestone 1 features, Milestone 2 refactoring (Singletons and
- * Visitors), or the whole application without changing Java code.
+ * These Markers' purpose is to let logback.xml filter the logs based
+ * on wich milestone the class belongs to. A marker is used as a parameter
+ * in each call to the logger object to make a log.
  */
 public final class Markers {
   public static final Marker MILESTONE_1 = MarkerFactory.getMarker("MILESTONE_1");

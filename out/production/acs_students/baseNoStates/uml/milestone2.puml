@@ -1,0 +1,372 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package baseNoStates {
+
+  class Main {
+    + {static} main(args : String[])
+  }
+
+  class WebServer <<Singleton>> {
+    - {static} PORT : int = 8080
+    - {static} FORMATTER : DateTimeFormatter
+    - {static} uniqueInstance : WebServer
+    - WebServer()
+    + {static} getInstance() : WebServer
+    + start()
+  }
+
+  class SocketThread {
+    - inSocket : Socket
+    + SocketThread(inSocket : Socket)
+    + run()
+    - makeRequest(tokens : String[]) : Request
+    - makeRequestReader(tokens : String[]) : RequestReader
+    - makeRequestArea(tokens : String[]) : RequestArea
+    - makeHeaderAnswer() : String
+    - makeJsonAnswer(request : Request) : String
+  }
+
+  WebServer +-- SocketThread
+
+  class DirectoryAreas <<Singleton>> {
+    - {static} uniqueInstance : DirectoryAreas
+    - DirectoryAreas()
+    + {static} getInstance() : DirectoryAreas
+    + makeAreas()
+    + findAreaById(id : String) : Area
+    + getProppedDoors() : ArrayList<Door>
+    + findDoorById(id : String) : Door
+    + getAllDoors() : ArrayList<Door>
+  }
+
+  class DirectoryUserGroups <<Singleton>> {
+    - {static} uniqueInstance : DirectoryUserGroups
+    - DirectoryUserGroups()
+    + {static} getInstance() : DirectoryUserGroups
+    + makeUserGroups()
+    + findUserByCredential(credential : String) : User
+  }
+
+  class Clock <<Singleton>> {
+    - {static} DEFAULT_PERIOD_SECONDS : int = 1
+    - {static} uniqueInstance : Clock
+    - date : LocalDateTime
+    - timer : Timer
+    - period : int
+    - running : boolean
+    - Clock(period : int)
+    + {static} getInstance() : Clock
+    + getDate() : LocalDateTime
+    + start()
+  }
+
+  abstract class Area {
+    # id : String
+    # description : String
+    + Area(id : String, description : String, parent : Partition)
+    + getId() : String
+    + getDescription() : String
+    + {abstract} accept(visitor : AreaVisitor)
+  }
+
+  class Partition {
+    + Partition(id : String, description : String, parent : Partition)
+    + addArea(area : Area)
+    + getAreas() : ArrayList<Area>
+    + accept(visitor : AreaVisitor)
+  }
+
+  class Space {
+    + Space(id : String, description : String, parent : Partition)
+    + addDoor(door : Door)
+    + getDoors() : ArrayList<Door>
+    + accept(visitor : AreaVisitor)
+  }
+
+  interface AreaVisitor {
+    + visitPartition(partition : Partition)
+    + visitSpace(space : Space)
+  }
+
+  class DoorsGivingAccessVisitor {
+    - doors : ArrayList<Door>
+    + getDoors() : ArrayList<Door>
+    + visitPartition(partition : Partition)
+    + visitSpace(space : Space)
+  }
+
+  class FindAreaByIdVisitor {
+    - targetId : String
+    - result : Area
+    + FindAreaByIdVisitor(targetId : String)
+    + getResult() : Area
+    + visitPartition(partition : Partition)
+    + visitSpace(space : Space)
+  }
+
+  class SpacesVisitor {
+    - spaces : ArrayList<Space>
+    + getSpaces() : ArrayList<Space>
+    + visitPartition(partition : Partition)
+    + visitSpace(space : Space)
+  }
+
+  class ProppedDoorsVisitor {
+    - proppedDoors : ArrayList<Door>
+    + getProppedDoors() : ArrayList<Door>
+    + visitPartition(partition : Partition)
+    + visitSpace(space : Space)
+  }
+
+  class Door {
+    - id : String
+    - closed : boolean
+    + Door(id : String, fromSpace : Space, toSpace : Space)
+    + processRequest(request : RequestReader)
+    - doAction(action : String)
+    + isClosed() : boolean
+    + getId() : String
+    + getStateName() : String
+    + getFromSpace() : Space
+    + getToSpace() : Space
+    + setClosed(closed : boolean)
+    + setState(state : DoorState)
+    + toString() : String
+    + toJson() : JSONObject
+  }
+
+  abstract class DoorState {
+    # name : String
+    + DoorState(door : Door)
+    + getName() : String
+    + {abstract} open()
+    + {abstract} close()
+    + {abstract} lock()
+    + {abstract} unlock()
+    + {abstract} unlockShortly()
+  }
+
+  class Locked {
+    + Locked(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class Unlocked {
+    + Unlocked(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class Propped {
+    + Propped(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+  }
+
+  class UnlockedShortly {
+    - {static} TIME_TO_TRANSITION_SECONDS : int = 10
+    - unlockTime : LocalDateTime
+    + UnlockedShortly(door : Door)
+    + open()
+    + close()
+    + lock()
+    + unlock()
+    + unlockShortly()
+    + update(observable : Observable, arg : Object)
+    - transition()
+  }
+
+  class UserGroup {
+    - name : String
+    - actions : ArrayList<String>
+    + UserGroup(name : String, areas : ArrayList<Area>, schedule : Schedule, actions : ArrayList<String>)
+    + canSendRequests(now : LocalDateTime) : boolean
+    + canDoAction(action : String) : boolean
+    + getAreas() : ArrayList<Area>
+    + getName() : String
+    + setSchedule(schedule : Schedule)
+    + addUser(user : User)
+    + findUserByCredential(credential : String) : User
+  }
+
+  class User {
+    - name : String
+    - credential : String
+    + User(name : String, userGroup : UserGroup, credential : String)
+    + getCredential() : String
+    + getName() : String
+    + getGroupName() : String
+    + canBeInSpace(space : Space) : boolean
+    + canSendRequests(now : LocalDateTime) : boolean
+    + canDoAction(action : String) : boolean
+    - getSpaces() : ArrayList<Space>
+    + toString() : String
+  }
+
+  class Schedule {
+    - fromDate : LocalDate
+    - toDate : LocalDate
+    - daysOfWeek : ArrayList<DayOfWeek>
+    - fromTime : LocalTime
+    - toTime : LocalTime
+    + Schedule(fromDate : LocalDate, toDate : LocalDate, daysOfWeek : ArrayList<DayOfWeek>, fromTime : LocalTime, toTime : LocalTime)
+    + includes(dateTime : LocalDateTime) : boolean
+  }
+
+  class Actions <<utility>> {
+    + {static} LOCK : String
+    + {static} UNLOCK : String
+    + {static} UNLOCK_SHORTLY : String
+    + {static} OPEN : String
+    + {static} CLOSE : String
+    - Actions()
+  }
+
+  class States <<utility>> {
+    + {static} LOCKED : String
+    + {static} UNLOCKED : String
+    + {static} UNLOCKED_SHORTLY : String
+    + {static} PROPPED : String
+    - States()
+  }
+
+  class Markers <<utility>> {
+    + {static} MILESTONE_1 : Marker
+    + {static} MILESTONE_2 : Marker
+    - Markers()
+  }
+
+  ' Composite & Area relationships
+  Area <|-- Partition
+  Area <|-- Space
+  Partition *--> "*" Area : areas
+  Space o--> "*" Door : doors
+  Door --> "1" Space : fromSpace
+  Door --> "1" Space : toSpace
+
+  ' Visitor relationships
+  AreaVisitor <|.. DoorsGivingAccessVisitor
+  AreaVisitor <|.. FindAreaByIdVisitor
+  AreaVisitor <|.. SpacesVisitor
+  AreaVisitor <|.. ProppedDoorsVisitor
+  Area ..> AreaVisitor
+
+  ' State relationships
+  Door o--> "1" DoorState : state
+  DoorState --> "1" Door : door
+  DoorState <|-- Locked
+  DoorState <|-- Unlocked
+  DoorState <|-- UnlockedShortly
+  DoorState <|-- Propped
+
+  ' Directories & RBAC relationships
+  DirectoryAreas --> "1" Area : rootArea
+  DirectoryAreas --> "*" Door : allDoors
+  DirectoryUserGroups *--> "*" UserGroup : userGroups
+  UserGroup "1" *-- "*" User : users / userGroup
+  UserGroup --> "*" Area : areas
+  UserGroup *--> "1" Schedule : schedule
+
+  ' Usage dependencies
+  Main ..> DirectoryAreas
+  Main ..> DirectoryUserGroups
+  Main ..> Clock
+  Main ..> WebServer
+  DirectoryAreas ..> FindAreaByIdVisitor
+  DirectoryAreas ..> ProppedDoorsVisitor
+  User ..> SpacesVisitor
+}
+
+package java.util {
+  abstract class Observable {
+    + addObserver(o : Observer)
+    + deleteObserver(o : Observer)
+    + setChanged()
+    + notifyObservers(arg : Object)
+  }
+
+  interface Observer {
+    + update(o : Observable, arg : Object)
+  }
+
+  Observable o--> "*" Observer : observers
+}
+
+Observable <|-- Clock
+Observer <|.. UnlockedShortly
+
+package baseNoStates.requests {
+  interface Request {
+    + answerToJson() : JSONObject
+    + process()
+    + toString() : String
+  }
+
+  class RequestRefresh {
+    - jsonsDoors : ArrayList<JSONObject>
+    + answerToJson() : JSONObject
+    + process()
+    + toString() : String
+  }
+
+  class RequestReader {
+    - credential : String
+    - action : String
+    - now : LocalDateTime
+    - doorId : String
+    - userName : String
+    - authorized : boolean
+    - reasons : ArrayList<String>
+    - doorStateName : String
+    - doorClosed : boolean
+    + RequestReader(credential : String, action : String, now : LocalDateTime, doorId : String)
+    + setDoorStateName(name : String)
+    + getAction() : String
+    + isAuthorized() : boolean
+    + addReason(reason : String)
+    + answerToJson() : JSONObject
+    + process()
+    - authorize(user : User, door : Door)
+    + toString() : String
+  }
+
+  class RequestArea {
+    - credential : String
+    - action : String
+    - areaId : String
+    - now : LocalDateTime
+    - userName : String
+    + RequestArea(credential : String, action : String, now : LocalDateTime, areaId : String)
+    + getAction() : String
+    + answerToJson() : JSONObject
+    + process()
+    + toString() : String
+  }
+
+  Request <|.. RequestRefresh
+  Request <|.. RequestReader
+  Request <|.. RequestArea
+  RequestArea *--> "*" RequestReader : requests
+}
+
+SocketThread ..> Request
+RequestArea ..> DoorsGivingAccessVisitor
+
+note bottom of Markers
+  All domain and request classes declare an SLF4J Logger
+  (omitted from individual classes for readability).
+end note
+
+@enduml

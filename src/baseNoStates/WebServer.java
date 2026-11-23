@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /*
  * Lightweight socket-based HTTP server acting as the facade of the Access Control Unit.
- * Listens on localhost:8080 for REST-like requests sent by the simulator or mobile app,
+ * Listens on localhost:8081 for REST-like requests sent by the simulator or mobile app,
  * spawns a SocketThread per client connection, builds and processes the corresponding
  * Request object, and sends back a JSON HTTP response.
  *
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 // https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
 // http://www.jcgonzalez.com/java-socket-mini-server-http-example
 public final class WebServer {
-  private static final int PORT = 8080;
+  private static final int PORT = 8081;
   private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
   // Dedicated logger routed to activity.log to keep user activity separate from debug traces
   private static final Logger activityLogger =
