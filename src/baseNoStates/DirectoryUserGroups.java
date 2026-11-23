@@ -1,14 +1,13 @@
 package baseNoStates;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Directory class responsible for creating and storing all UserGroup instances
@@ -179,7 +178,7 @@ public final class DirectoryUserGroups {
       }
     }
     String msg = "user with credential " + credential + " not found";
-    logger.warn(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, msg);
     return null; // otherwise we get a Java error
   }
 }

@@ -1,0 +1,21 @@
+Authors of the practical work (Milestone 1 - Access Control System):
+
+1. Name: Joel Rillo Fernández
+NIU: 1708430
+Contribution:
+* Design and implementation of visitor pattern.
+* Creation of abstract class `AreaVisitor` and its concrete subclasses `DoorGettingVisitor`, `IdFindingVisitor`.
+
+
+2. Name: Elías Pascual Paz
+NIU: 1672946
+Contribution:
+* Design and implementation of the singleton pattern.
+* Visitor pattern fix.
+
+3. Name: Hug Capafons Cuadra
+NIU: 1746049
+Contribution:
+* Implementation of logging system.
+* Implementation of checkstyle.
+* Writing of additional, propper, comments.
