@@ -1,23 +1,20 @@
 package baseNoStates;
 
 /*
- * Abstract class representing the state of a door, applying the State design pattern.
- * Instead of having large conditional (if-else or switch) statements scattered across
- * the Door class to check its state before every action, Door delegates the execution
- * of actions (open, close, lock, unlock, unlockShortly) to its current DoorState object.
- * This makes the design cohesive and easy to extend if new states are added in the future.
+ * Abstract State in the State design pattern modeling the behavior of a Door.
+ * Rather than filling Door with long conditional blocks checking the current state
+ * before every action, Door delegates operations (open, close, lock, unlock,
+ * unlockShortly) to its active DoorState object. Adding future states (e.g.,
+ * DoNotDisturb or Idle) only requires creating a new subclass without modifying Door.
  *
- * A DoorState needs a reference to its associated Door (#door) so that concrete states
- * can query or change the physical closed status of the door and trigger state transitions
- * by invoking door.setState(...).
+ * Each state keeps a reference to its owning Door so concrete states can check or update
+ * the door's physical closed status and trigger transitions via door.setState(...).
  */
 public abstract class DoorState {
-
-  protected Door door;
-
+  protected final Door door;
   protected String name;
 
-  public DoorState(Door door){
+  public DoorState(Door door) {
     this.door = door;
   }
 
@@ -34,5 +31,4 @@ public abstract class DoorState {
   public abstract void unlock();
 
   public abstract void unlockShortly();
-
 }

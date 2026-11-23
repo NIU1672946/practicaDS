@@ -1,23 +1,35 @@
 package baseNoStates.requests;
 
-import baseNoStates.*;
-
+import baseNoStates.Actions;
+import baseNoStates.Area;
+import baseNoStates.DirectoryAreas;
+import baseNoStates.DirectoryUserGroups;
+import baseNoStates.Door;
+import baseNoStates.DoorsGivingAccessVisitor;
+import baseNoStates.Markers;
+import baseNoStates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Represents a request to lock or unlock all doors giving access to a given Area
- * (either a single Space or a Partition). It decomposes the area request into
- * individual RequestReader objects for each access door in the area and processes them.
+ * (either a single Space or a Partition). Rather than duplicating authorization logic,
+ * it collects all access doors via DoorsGivingAccessVisitor and delegates each door
+ * to an individual RequestReader.
  */
 public class RequestArea implements Request {
+  private static final Logger logger = LoggerFactory.getLogger(RequestArea.class);
+
   private final String credential;
   private final String action;
   private final String areaId;
   private final LocalDateTime now;
   private final ArrayList<RequestReader> requests = new ArrayList<>();
+  private String userName;
 
   public RequestArea(String credential, String action, LocalDateTime now, String areaId) {
     this.credential = credential;
@@ -47,44 +59,39 @@ public class RequestArea implements Request {
 
   @Override
   public String toString() {
-    String requestsDoorsStr;
-    if (requests.size() == 0) {
-      requestsDoorsStr = "";
-    } else {
-      requestsDoorsStr = requests.toString();
+    String displayName = (userName == null) ? "unknown" : userName;
+    boolean allAuthorized = !requests.isEmpty();
+    for (RequestReader rd : requests) {
+      if (!rd.isAuthorized()) {
+        allAuthorized = false;
+        break;
+      }
     }
-    return "Request{"
-        + "credential=" + credential
-        + ", action=" + action
-        + ", now=" + now
-        + ", areaId=" + areaId
-        + ", requestsDoors=" + requestsDoorsStr
-        + "}";
+    return "Request area userName " + displayName
+        + " action " + action
+        + " datetime " + now
+        + " areaId " + areaId
+        + " authorized " + allAuthorized;
   }
 
-  // processing the request of an area is creating the corresponding door requests and forwarding
-  // them to all of its doors. For some it may be authorized and action will be done, for others
-  // it won't be authorized and nothing will happen to them.
+  @Override
   public void process() {
-    // make the door requests and put them into the area request to be authorized later and
-    // processed later
-    Area area = DirectoryAreas.getInstance().findAreaById(areaId);
-    // an Area is a Space or a Partition
-    if (area != null) {
-      // is null when from the app we click on an action but no place is selected because
-      // there (flutter) I don't control like I do in javascript that all the parameters are provided
+    logger.debug(Markers.MILESTONE_1, "Processing area request for area '{}' with action '{}'",
+        areaId, action);
+    User user = DirectoryUserGroups.getInstance().findUserByCredential(credential);
+    userName = (user == null) ? "unknown" : user.getName();
 
-      // Make all the door requests, one for each door in the area, and process them.
-      // Look for the doors in the spaces of this area that give access to them.
-      DoorGettingVisitor visitor = new DoorGettingVisitor();
+    Area area = DirectoryAreas.getInstance().findAreaById(areaId);
+    if (area != null) {
+      DoorsGivingAccessVisitor visitor = new DoorsGivingAccessVisitor();
       area.accept(visitor);
-      for (Door door : visitor.getResult()) {
+      for (Door door : visitor.getDoors()) {
         RequestReader requestReader = new RequestReader(credential, action, now, door.getId());
         requestReader.process();
-        // after process() the area request contains the answer as the answer
-        // to each individual door request, that is read by the simulator/Flutter app
         requests.add(requestReader);
       }
+    } else {
+      logger.warn(Markers.MILESTONE_1, "Area '{}' not found for area request", areaId);
     }
   }
 }

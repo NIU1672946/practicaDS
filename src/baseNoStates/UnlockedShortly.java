@@ -1,43 +1,36 @@
 package baseNoStates;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Observable;
 import java.util.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
- * Concrete state of the State design pattern and Observer in the Observer design pattern.
- * Represents a door that has been temporarily unlocked for 10 seconds so a user can cross it.
+ * Concrete State (State pattern) and Concrete Observer (Observer pattern) representing
+ * a door temporarily unlocked for 10 seconds so an authorized user can pass through
+ * without manually locking it afterwards.
  *
- * When instantiated, it registers itself as an observer of the shared Clock instance.
- * Every second, the Clock notifies this state of the current time via update().
- * After 10 seconds have elapsed since creation (t0), this state unsubscribes from the Clock
- * to prevent memory leaks and checks the physical status of the door:
- * - If the door is closed, it automatically returns to the Locked state.
- * - If the door was left open, it transitions to the Propped state.
+ * Upon instantiation, it subscribes to the global Clock Singleton and records its
+ * creation timestamp. On each tick, once 10 seconds have elapsed, it unsubscribes from
+ * Clock (preventing memory leaks) and transitions automatically to Locked if closed,
+ * or to Propped if the door was left open.
  */
+// java.util.Observer and Observable are deprecated since Java 9, but required by the spec.
 @SuppressWarnings("deprecation")
 public class UnlockedShortly extends DoorState implements Observer {
-  private static final int TIME_TO_TRANSITION = 10; // maximum duration in seconds
-  // A unique clock is shared by all UnlockedShortly instances because it is static
-  private static final Clock clock = Clock.getInstance();
-  private static boolean clockStarted = false;
+  private static final Logger logger = LoggerFactory.getLogger(UnlockedShortly.class);
+  private static final int TIME_TO_TRANSITION_SECONDS = 10;
 
-  private final LocalDateTime t0;
-
-  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.UnlockedShortly");
+  private final LocalDateTime unlockTime;
 
   public UnlockedShortly(Door door) {
     super(door);
     this.name = States.UNLOCKED_SHORTLY;
-    this.t0 = LocalDateTime.now();
-    if (!clockStarted) {
-      clock.start();
-      clockStarted = true;
-    }
+    this.unlockTime = LocalDateTime.now();
+    Clock clock = Clock.getInstance();
+    clock.start();
     clock.addObserver(this);
   }
 
@@ -45,60 +38,62 @@ public class UnlockedShortly extends DoorState implements Observer {
   public void open() {
     if (door.isClosed()) {
       door.setClosed(false);
+      logger.info(Markers.MILESTONE_1, "Door '{}' opened while unlocked shortly", door.getId());
     } else {
-
-      String msg = "Can't open door " + door.getId() + " because it's already open";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.warn(Markers.MILESTONE_1, "Can't open door '{}' because it's already open",
+          door.getId());
     }
   }
 
   @Override
   public void close() {
     if (door.isClosed()) {
-      String msg = "Can't close door " + door.getId() + " because it's already closed";
-      logger.info(Markers.MILESTONE_1,msg);
-
+      logger.warn(Markers.MILESTONE_1, "Can't close door '{}' because it's already closed",
+          door.getId());
     } else {
       door.setClosed(true);
+      logger.info(Markers.MILESTONE_1, "Door '{}' closed while unlocked shortly", door.getId());
     }
   }
 
   @Override
   public void lock() {
-    String msg = "Can't lock door " + door.getId() + " because it's unlocked shortly";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, "Can't lock door '{}' because it's unlocked shortly",
+        door.getId());
   }
 
   @Override
   public void unlock() {
-    String msg = "Can't unlock door " + door.getId() + " because it's unlocked shortly";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, "Can't unlock door '{}' because it's unlocked shortly",
+        door.getId());
   }
 
   @Override
   public void unlockShortly() {
-    // A door cannot be repeatedly unlocked shortly while it is already in this temporary state
-    String msg = "Can't unlock shortly door " + door.getId() + " because it already is";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, "Can't unlock shortly door '{}' because it already is",
+        door.getId());
   }
 
   @Override
-  public void update(Observable o, Object arg) {
+  public void update(Observable observable, Object arg) {
     LocalDateTime now = (LocalDateTime) arg;
-    // Check if 10 seconds have passed since the door entered UnlockedShortly
-    if (Duration.between(t0, now).getSeconds() >= TIME_TO_TRANSITION) {
-      // Unsubscribe from the observable clock so unused state objects can be garbage collected
-      clock.deleteObserver(this);
+    long elapsed = Duration.between(unlockTime, now).getSeconds();
+    logger.debug(Markers.MILESTONE_1, "Door '{}' unlocked shortly for {}s", door.getId(), elapsed);
+    if (elapsed >= TIME_TO_TRANSITION_SECONDS) {
+      // Unsubscribe immediately so obsolete state objects can be garbage collected
+      Clock.getInstance().deleteObserver(this);
       transition();
     }
   }
 
   private void transition() {
-    // After 10 seconds from creation, return to Locked if closed, or become Propped if still open
     if (door.isClosed()) {
       door.setState(new Locked(door));
+      logger.info(Markers.MILESTONE_1, "Door '{}' automatically returned to locked", door.getId());
     } else {
       door.setState(new Propped(door));
+      logger.warn(Markers.MILESTONE_1, "ALARM: Door '{}' entered propped state (left open)",
+          door.getId());
     }
   }
 }

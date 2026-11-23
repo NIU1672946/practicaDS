@@ -1,48 +1,65 @@
 <configuration>
 
+    <!--
+      Log filtering mode selection (comment/uncomment blocks to choose):
+      1) Milestone 1 only: uncomment the MILESTONE_1 turboFilter block.
+      2) Milestone 2 only: uncomment the MILESTONE_2 turboFilter block.
+      3) All classes: keep BOTH turboFilter blocks commented out.
+
+      OnMatch uses NEUTRAL (not ACCEPT) so the root logger level (debug/info/warn)
+      is still respected when filtering by milestone marker.
+    -->
+
+    <!--
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
-        <!--<Marker>MILESTONE_1</Marker> -->
-        <!--<OnMatch>ACCEPT</OnMatch> -->
-        <!-- <OnMismatch>DENY</OnMismatch> -->
-
-
-        <!--<Marker>MILESTONE_2</Marker> -->
-        <!--<OnMatch>ACCEPT</OnMatch> -->
-        <!-- <OnMismatch>DENY</OnMismatch> -->
-
+      <Marker>MILESTONE_1</Marker>
+      <OnMatch>NEUTRAL</OnMatch>
+      <OnMismatch>DENY</OnMismatch>
     </turboFilter>
+    -->
+
+    <!--
+    <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
+      <Marker>MILESTONE_2</Marker>
+      <OnMatch>NEUTRAL</OnMatch>
+      <OnMismatch>DENY</OnMismatch>
+    </turboFilter>
+    -->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder> <pattern>
-            %d{HH:mm:ss} [%thread] %-5level [%marker] %logger{36} - %msg%n
-        </pattern> </encoder>
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level [%marker] %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
 
-    <appender name="GENERAL_LOGS_FILE" class="ch.qos.logback.core.FileAppender">
-        <append>true</append> <!-- default -->
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
-                %msg%n</pattern>
-        </encoder>
+    <appender name="GENERAL_HTML_FILE" class="ch.qos.logback.core.FileAppender">
         <file>general_log.html</file>
-    </appender>
-
-    <appender name="WEB_SERVER_LOGS_FILE" class="ch.qos.logback.core.FileAppender">
-        <append>true</append> <!-- default -->
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
-                %msg%n</pattern>
+        <append>true</append>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.html.HTMLLayout">
+                <pattern>%relative%thread%mdc%level%logger%msg</pattern>
+            </layout>
         </encoder>
-        <file>activity.html</file>
     </appender>
 
-    <logger name = "baseNoStates.WebServer">
-        <appender-ref ref = "WEB_SERVER_LOGS_FILE"/>
+    <appender name="ACTIVITY_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>activity.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Dedicated logger for user request activity recorded cleanly in activity.log -->
+    <logger name="baseNoStates.WebServer.activity" level="info" additivity="false">
+        <appender-ref ref="ACTIVITY_FILE" />
+        <appender-ref ref="STDOUT" />
     </logger>
 
+    <!-- Switch between debug, info, and warn to test priority level filtering -->
     <root level="debug">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="GENERAL_LOGS_FILE" />
+        <appender-ref ref="GENERAL_HTML_FILE" />
     </root>
 
 </configuration>

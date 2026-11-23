@@ -6,37 +6,38 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-
-//new class to handle schedules comparison and not overload user groups with too much attributes referencing time of day and weekdays.
-
+/*
+ * Encapsulates the temporal dimension ("when") of a UserGroup's access rights:
+ * a valid date interval, allowed days of the week, and a daily time range.
+ * Extracting schedule logic into its own class keeps UserGroup cohesive and allows
+ * replacing a group's schedule independently of its users or areas.
+ */
 public class Schedule {
-    private final LocalDate fromDate;
-    private final LocalDate toDate;
-    private final ArrayList<DayOfWeek> daysOfWeek;
-    private final LocalTime fromTime;
-    private final LocalTime toTime;
+  private final LocalDate fromDate;
+  private final LocalDate toDate;
+  private final ArrayList<DayOfWeek> daysOfWeek;
+  private final LocalTime fromTime;
+  private final LocalTime toTime;
 
-    public Schedule(LocalDate fromDate, LocalDate toDate,
-                    ArrayList<DayOfWeek> daysOfWeek,
-                    LocalTime fromTime, LocalTime toTime){
+  public Schedule(LocalDate fromDate, LocalDate toDate,
+                  ArrayList<DayOfWeek> daysOfWeek,
+                  LocalTime fromTime, LocalTime toTime) {
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.daysOfWeek = daysOfWeek;
+    this.fromTime = fromTime;
+    this.toTime = toTime;
+  }
 
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        this.daysOfWeek = daysOfWeek;
-        this.fromTime = fromTime;
-        this.toTime = toTime;
+  public boolean includes(LocalDateTime dateTime) {
+    LocalDate currentDate = dateTime.toLocalDate();
+    LocalTime currentTime = dateTime.toLocalTime();
+    DayOfWeek currentDay = dateTime.getDayOfWeek();
 
-    }
+    boolean validDate = !currentDate.isBefore(fromDate) && !currentDate.isAfter(toDate);
+    boolean validDay = daysOfWeek.contains(currentDay);
+    boolean validTime = !currentTime.isBefore(fromTime) && !currentTime.isAfter(toTime);
 
-    public boolean includes(LocalDateTime now ){//verifies if an instant is included inside the schedule
-        LocalDate currentDate = now.toLocalDate();
-        LocalTime currentTime = now.toLocalTime();
-        DayOfWeek currentDay = now.getDayOfWeek();
-
-        boolean validDate = !currentDate.isBefore(fromDate) && !currentDate.isAfter(toDate);
-        boolean validDay = daysOfWeek.contains(currentDay);
-        boolean validTime = !currentTime.isBefore(fromTime) && !currentTime.isAfter(toTime);
-
-        return validDate && validDay && validTime;
-    }
+    return validDate && validDay && validTime;
+  }
 }

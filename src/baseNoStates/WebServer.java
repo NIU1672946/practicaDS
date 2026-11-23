@@ -1,14 +1,9 @@
 package baseNoStates;
 
 import baseNoStates.requests.Request;
+import baseNoStates.requests.RequestArea;
 import baseNoStates.requests.RequestReader;
 import baseNoStates.requests.RequestRefresh;
-import baseNoStates.requests.RequestArea;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,123 +13,127 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.StringTokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-// Based on
+/*
+ * Lightweight socket-based HTTP server acting as the facade of the Access Control Unit.
+ * Listens on localhost:8080 for REST-like requests sent by the simulator or mobile app,
+ * spawns a SocketThread per client connection, builds and processes the corresponding
+ * Request object, and sends back a JSON HTTP response.
+ *
+ * Design Pattern: Singleton.
+ * Only one WebServer can bind to port 8080 during execution. The blocking accept loop
+ * lives in start() instead of the constructor so getInstance() returns cleanly.
+ */
+// Based on:
 // https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
 // http://www.jcgonzalez.com/java-socket-mini-server-http-example
-public class WebServer {
-  private static final int PORT = 8000; // port to listen connection
+public final class WebServer {
+  private static final int PORT = 8080;
+  private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
+  // Dedicated logger routed to activity.log to keep user activity separate from debug traces
+  private static final Logger activityLogger =
+      LoggerFactory.getLogger("baseNoStates.WebServer.activity");
+  private static final DateTimeFormatter FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
-  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.WebServer");
+  private static WebServer uniqueInstance = null;
 
-  private static final DateTimeFormatter formatter =
-          DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+  private WebServer() {
+  }
 
-  public WebServer() {
-    try {
-      ServerSocket serverConnect = new ServerSocket(PORT);
+  public static synchronized WebServer getInstance() {
+    if (uniqueInstance == null) {
+      uniqueInstance = new WebServer();
+      logger.debug(Markers.MILESTONE_2, "Created unique WebServer instance");
+    }
+    return uniqueInstance;
+  }
 
-      logger.info(Markers.MILESTONE_1, "Server started.\nListening for connections on port : " + PORT + " ...\n");
-      // we listen until user halts server execution
+  public void start() {
+    try (ServerSocket serverConnect = new ServerSocket(PORT)) {
+      logger.info(Markers.MILESTONE_1, "Server started. Listening on port {} ...", PORT);
       while (true) {
-        // each client connection will be managed in a dedicated Thread
         new SocketThread(serverConnect.accept());
-        // create dedicated thread to manage the client connection
       }
     } catch (IOException e) {
-      logger.warn(Markers.MILESTONE_1,"Server Connection error : " + e.getMessage());
+      logger.error(Markers.MILESTONE_1, "Server connection error: {}", e.getMessage());
     }
   }
 
-
   private class SocketThread extends Thread {
-    // as an inner class, SocketThread sees WebServer attributes
-    private final Socket insocked; // client connection via Socket class
+    // Inner class so each connection thread directly sees WebServer constants and loggers
+    private final Socket inSocket;
 
-    SocketThread(Socket insocket) {
-      this.insocked = insocket;
+    SocketThread(Socket inSocket) {
+      this.inSocket = inSocket;
       this.start();
     }
 
     @Override
     public void run() {
-      // we manage our particular client connection
-      BufferedReader in;
-      PrintWriter out;
-      String resource;
-
-      try {
-        // we read characters from the client via input stream on the socket
-        in = new BufferedReader(new InputStreamReader(insocked.getInputStream()));
-        // we get character output stream to client
-        out = new PrintWriter(insocked.getOutputStream());
-        // get first line of the request from the client
+      try (Socket socket = inSocket;
+           BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+           PrintWriter out = new PrintWriter(socket.getOutputStream())) {
         String input = in.readLine();
-        // we parse the request with a string tokenizer
-
-        logger.warn(Markers.MILESTONE_1,"sockedthread : " + input);
+        if (input == null) {
+          logger.debug(Markers.MILESTONE_1, "Ignored empty connection request");
+          return;
+        }
+        logger.debug(Markers.MILESTONE_1, "SocketThread received: {}", input);
 
         StringTokenizer parse = new StringTokenizer(input);
-        String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
+        String method = parse.nextToken().toUpperCase();
         if (!method.equals("GET")) {
-          logger.warn(Markers.MILESTONE_1,"501 Not Implemented : " + method + " method.");
-
-        } else {
-          // what comes after "localhost:8080"
-          resource = parse.nextToken();
-          String msg = "input " + input + "\n" + "method " + method + "\n" +  "resource " + resource + "\n";
-          logger.info(Markers.MILESTONE_1,msg);
-
-          parse = new StringTokenizer(resource, "/[?]=&");
-
-          String msg2 = "";
-
-          int i = 0;
-          String[] tokens = new String[20]; // more than the actual number of parameters
-          while (parse.hasMoreTokens()) {
-            tokens[i] = parse.nextToken();
-            msg2 += i + " " + tokens[i] + "\n";
-            i++;
-          }
-          logger.debug(Markers.MILESTONE_1,msg2);
-
-          // Here is where we send the request and get the answer inside it
-          Request request = makeRequest(tokens);
-          if (request != null) {
-            String typeRequest = tokens[0];
-            logger.info(Markers.MILESTONE_1,"created request " + typeRequest + " " + request);
-            request.process();
-            logger.info(Markers.MILESTONE_1,"processed request " + typeRequest + " " + request);
-            // Make the answer as a JSON string, to be sent to the Javascript client
-            String answer = makeJsonAnswer(request);
-            logger.info(Markers.MILESTONE_1,"answer:+++\n" + answer);
-            // Here we send the response to the client
-            out.println(answer);
-            out.flush(); // flush character output stream buffer
-          }
+          logger.warn(Markers.MILESTONE_1, "501 Not Implemented: {} method", method);
+          return;
         }
 
-        in.close();
-        out.close();
-        insocked.close(); // we close socket connection
+        String resource = parse.nextToken();
+        logger.debug(Markers.MILESTONE_1, "HTTP method={}, resource={}", method, resource);
+
+        parse = new StringTokenizer(resource, "/[?]=&");
+        StringBuilder tokenLog = new StringBuilder();
+        int i = 0;
+        String[] tokens = new String[20];
+        while (parse.hasMoreTokens()) {
+          tokens[i] = parse.nextToken();
+          tokenLog.append(i).append(' ').append(tokens[i]).append('\n');
+          i++;
+        }
+        logger.debug(Markers.MILESTONE_1, "Parsed tokens:\n{}", tokenLog);
+
+        Request request = makeRequest(tokens);
+        if (request != null) {
+          String typeRequest = tokens[0];
+          logger.debug(Markers.MILESTONE_1, "Created request {}: {}", typeRequest, request);
+          request.process();
+          logger.debug(Markers.MILESTONE_1, "Processed request {}: {}", typeRequest, request);
+
+          // Record user request activity cleanly in activity.log
+          activityLogger.info(Markers.MILESTONE_1, "{}", request);
+
+          String answer = makeJsonAnswer(request);
+          logger.debug(Markers.MILESTONE_1, "JSON answer:\n{}", answer);
+          out.println(answer);
+          out.flush();
+        }
       } catch (Exception e) {
-        logger.warn(Markers.MILESTONE_1,"Exception : " + e);
-        System.err.println("Exception : " + e);
+        logger.error(Markers.MILESTONE_1, "Error handling client socket: {}", e.toString());
       }
     }
 
     private Request makeRequest(String[] tokens) {
-      // always return request because it contains the answer for the Javascript client
-      String msg = "tokens : ";
+      StringBuilder tokenSummary = new StringBuilder("tokens: ");
       for (String token : tokens) {
-        msg += token + ", ";
+        if (token != null) {
+          tokenSummary.append(token).append(", ");
+        }
       }
-      logger.info(Markers.MILESTONE_1,msg);
-
+      logger.debug(Markers.MILESTONE_1, "{}", tokenSummary);
 
       Request request;
-      // assertions below evaluated to false won't stop the webserver, just print an
-      // assertion error, maybe because the webserver runs in a socked thread
       switch (tokens[0]) {
         case "refresh":
           request = new RequestRefresh();
@@ -146,14 +145,12 @@ public class WebServer {
           request = makeRequestArea(tokens);
           break;
         case "get_children":
-          //TODO: this is to be implemented when programming the mobile app in Flutter
-          // in order to navigate the hierarchy of partitions, spaces and doors
+          // TODO: implement in Milestone 3 for Flutter mobile app navigation
           assert false : "request get_children is not yet implemented";
           request = null;
           System.exit(-1);
           break;
         default:
-          // just in case we change the user interface or the simulator
           assert false : "unknown request " + tokens[0];
           request = null;
           System.exit(-1);
@@ -164,7 +161,7 @@ public class WebServer {
     private RequestReader makeRequestReader(String[] tokens) {
       String credential = tokens[2];
       String action = tokens[4];
-      LocalDateTime dateTime = LocalDateTime.parse(tokens[6], formatter);
+      LocalDateTime dateTime = LocalDateTime.parse(tokens[6], FORMATTER);
       String doorId = tokens[8];
       return new RequestReader(credential, action, dateTime, doorId);
     }
@@ -172,29 +169,21 @@ public class WebServer {
     private RequestArea makeRequestArea(String[] tokens) {
       String credential = tokens[2];
       String action = tokens[4];
-      LocalDateTime dateTime = LocalDateTime.parse(tokens[6], formatter);
+      LocalDateTime dateTime = LocalDateTime.parse(tokens[6], FORMATTER);
       String areaId = tokens[8];
       return new RequestArea(credential, action, dateTime, areaId);
     }
 
     private String makeHeaderAnswer() {
-      String answer = "";
-      answer += "HTTP/1.0 200 OK\r\n";
-      answer += "Content-type: application/json\r\n";
-      answer += "Access-Control-Allow-Origin: *\r\n";
-      // SUPERIMPORTANT to avoid the CORS problem :
-      // "Cross-Origin Request Blocked: The Same Origin Policy disallows reading
-      // the remote resource..."
-      answer += "\r\n"; // blank line between headers and content, very important !
-      return answer;
+      // Access-Control-Allow-Origin prevents browser CORS errors with the local simulator
+      return "HTTP/1.0 200 OK\r\n"
+          + "Content-type: application/json\r\n"
+          + "Access-Control-Allow-Origin: *\r\n"
+          + "\r\n";
     }
 
     private String makeJsonAnswer(Request request) {
-      String answer = makeHeaderAnswer();
-      answer += request.answerToJson().toString();
-      return answer;
+      return makeHeaderAnswer() + request.answerToJson().toString();
     }
-
   }
-
 }

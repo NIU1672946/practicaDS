@@ -6,47 +6,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * Represents a physical door controlled by the ACS.
- * Acts as the Context class in the State design pattern: it holds a reference to its
- * current DoorState (initially Unlocked) and delegates state-dependent actions to it.
+ * Represents a physical electrified door controlled by the ACS.
+ * Acts as the Context in the State design pattern: it holds its current DoorState
+ * (initially Unlocked and closed) and delegates every state-dependent action to it.
  *
- * Each door also knows the two spaces it connects: 'fromSpace' (where the credential
- * reader is located) and 'toSpace' (the destination space entered when crossing the door).
- * Knowing both spaces is required to authorize reader requests based on user permissions.
+ * Each Door tracks both 'fromSpace' (where the credential reader is mounted) and
+ * 'toSpace' (the destination room entered through the door). Both spaces are verified
+ * during authorization, and the door registers itself in 'toSpace' so area requests
+ * can locate all access doors leading into a room or partition.
  */
 public class Door {
+  private static final Logger logger = LoggerFactory.getLogger(Door.class);
+
   private final String id;
-  private boolean closed; // physically closed or open
+  private boolean closed;
   private DoorState state;
   private final Space fromSpace;
   private final Space toSpace;
-  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Door");
-
 
   public Door(String id, Space fromSpace, Space toSpace) {
     this.id = id;
     this.closed = true;
-    this.state = new Unlocked(this); // initial state according to the state diagram
+    this.state = new Unlocked(this);
     this.fromSpace = fromSpace;
     this.toSpace = toSpace;
-    // Register this door in the destination space so area requests can find all access doors
     this.toSpace.addDoor(this);
   }
 
   public void processRequest(RequestReader request) {
-    // it is the Door that process the request because the door has and knows
-    // its state, and if closed or open
+    // Door executes the action because only it owns its physical closed status and DoorState
     if (request.isAuthorized()) {
       String action = request.getAction();
+      logger.debug(Markers.MILESTONE_1, "Door '{}' executing authorized action '{}'", id, action);
       doAction(action);
     } else {
-      logger.warn(Markers.MILESTONE_1,"not authorized");
+      logger.warn(Markers.MILESTONE_1, "Request for door '{}' with action '{}' not authorized",
+          id, request.getAction());
     }
     request.setDoorStateName(getStateName());
   }
 
   private void doAction(String action) {
-    // Delegate the action to the current DoorState object (State pattern)
     switch (action) {
       case Actions.OPEN:
         state.open();
@@ -77,23 +77,31 @@ public class Door {
     return id;
   }
 
-  public String getStateName() {return state.getName();}
+  public String getStateName() {
+    return state.getName();
+  }
 
-  public Space getFromSpace() {return fromSpace;}
+  public Space getFromSpace() {
+    return fromSpace;
+  }
 
-  public Space getToSpace() {return toSpace;}
+  public Space getToSpace() {
+    return toSpace;
+  }
 
-  public void setClosed(boolean closed) {this.closed = closed;}
+  public void setClosed(boolean closed) {
+    this.closed = closed;
+  }
 
-  public void setState(DoorState state){this.state = state;}
+  public void setState(DoorState state) {
+    logger.debug(Markers.MILESTONE_1, "Door '{}' transitioning from '{}' to '{}'",
+        id, this.state != null ? this.state.getName() : "none", state.getName());
+    this.state = state;
+  }
 
   @Override
   public String toString() {
-    return "Door{"
-        + ", id='" + id + '\''
-        + ", closed=" + closed
-        + ", state=" + getStateName()
-        + "}";
+    return "Door{id='" + id + "', closed=" + closed + ", state=" + getStateName() + "}";
   }
 
   public JSONObject toJson() {

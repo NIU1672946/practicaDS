@@ -1,38 +1,33 @@
 package baseNoStates;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 /*
- * Represents a role or group of users in Role-Based Access Control (RBAC).
- * Grouping users by role simplifies administration: permissions are granted to a UserGroup
- * rather than to individual users. A UserGroup encapsulates the four dimensions of access:
- * - Who: the list of users belonging to this group.
- * - Where: the list of areas (partitions and/or spaces) they can access.
- * - What: the list of actions they are allowed to perform on doors.
- * - When: the schedule (date interval, days of the week, and daily time interval).
+ * Represents a role in Role-Based Access Control (RBAC).
+ * Instead of assigning permissions to individual users, access rights are granted to
+ * a UserGroup and acquired by all its members. A UserGroup binds the four dimensions
+ * of access control: who (users), where (areas), what (actions), and when (schedule).
  */
 public class UserGroup {
   private final String name;
   private final ArrayList<User> users = new ArrayList<>();
   private final ArrayList<Area> areas;
   private final ArrayList<String> actions;
-  private Schedule schedule; //the schedule must be modifiable
+  private Schedule schedule;
 
-  public UserGroup(String name, ArrayList<Area> areas, Schedule schedule, ArrayList<String> actions) {
+  public UserGroup(String name, ArrayList<Area> areas, Schedule schedule,
+                   ArrayList<String> actions) {
     this.name = name;
     this.areas = areas;
     this.schedule = schedule;
     this.actions = actions;
   }
 
-  // Validates whether a given timestamp falls within the group's schedule (dates, weekday, hours)
   public boolean canSendRequests(LocalDateTime now) {
     return schedule.includes(now);
   }
+
   public boolean canDoAction(String action) {
     return actions.contains(action);
   }
@@ -43,6 +38,10 @@ public class UserGroup {
 
   public String getName() {
     return name;
+  }
+
+  public void setSchedule(Schedule schedule) {
+    this.schedule = schedule;
   }
 
   public void addUser(User user) {

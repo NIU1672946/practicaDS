@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /*
- * Represents an individual user of the ACS identified by a name and a unique credential.
- * Following Role-Based Access Control (RBAC), permissions are not assigned directly to
- * each user; instead, a User belongs to a UserGroup and acquires its access rights
- * (allowed areas, actions, and schedule) by delegating permission checks to its group.
+ * Represents an individual person registered in the ACS with a name and unique mobile
+ * credential. Following Role-Based Access Control (RBAC), a User holds no permissions
+ * directly; all authorization checks (spaces, schedule, and actions) are delegated to
+ * the UserGroup the user belongs to.
  */
 public class User {
   private final String name;
@@ -28,28 +28,28 @@ public class User {
     return name;
   }
 
-  // Checks if the user is allowed to be in a given physical space
-  public boolean canBeInSpace(Space sp) {
-    return getSpaces().contains(sp);
+  public String getGroupName() {
+    return userGroup.getName();
   }
 
-  // Checks if the user is allowed to send requests at the given date and time
+  public boolean canBeInSpace(Space space) {
+    return getSpaces().contains(space);
+  }
+
   public boolean canSendRequests(LocalDateTime now) {
     return userGroup.canSendRequests(now);
   }
 
-  // Checks if the user's role authorizes performing the requested action
   public boolean canDoAction(String action) {
     return userGroup.canDoAction(action);
   }
 
-  // Retrieves all individual spaces contained within the areas granted to the user's group
   private ArrayList<Space> getSpaces() {
-    ArrayList<Space> spaces = new ArrayList<>();
+    SpacesVisitor visitor = new SpacesVisitor();
     for (Area area : userGroup.getAreas()) {
-      spaces.addAll(area.getSpaces());
+      area.accept(visitor);
     }
-    return spaces;
+    return visitor.getSpaces();
   }
 
   @Override

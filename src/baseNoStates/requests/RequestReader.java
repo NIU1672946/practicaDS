@@ -3,27 +3,32 @@ package baseNoStates.requests;
 import baseNoStates.DirectoryAreas;
 import baseNoStates.DirectoryUserGroups;
 import baseNoStates.Door;
+import baseNoStates.Markers;
 import baseNoStates.Space;
 import baseNoStates.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
- * Represents an individual door request sent from a reader or remotely for a single door.
- * It validates the four Ws (Who: user credential, Where: door's fromSpace and toSpace,
- * When: request timestamp against the user group's schedule, What: requested action)
- * and, if authorized, asks the target Door to execute the action.
+ * Represents a request targeting a single Door (originated at a physical reader or
+ * remotely). Validates the four Ws of access control (Who: credential, Where: door's
+ * fromSpace and toSpace, When: schedule at timestamp 'now', What: action) and delegates
+ * execution to the target Door.
  */
 public class RequestReader implements Request {
-  private final String credential; // who
-  private final String action;     // what
-  private final LocalDateTime now; // when
-  private final String doorId;     // where
+  private static final Logger logger = LoggerFactory.getLogger(RequestReader.class);
+
+  private final String credential;
+  private final String action;
+  private final LocalDateTime now;
+  private final String doorId;
   private String userName;
   private boolean authorized;
-  private final ArrayList<String> reasons; // why not authorized
+  private final ArrayList<String> reasons;
   private String doorStateName;
   private boolean doorClosed;
 
@@ -31,7 +36,7 @@ public class RequestReader implements Request {
     this.credential = credential;
     this.action = action;
     this.doorId = doorId;
-    reasons = new ArrayList<>();
+    this.reasons = new ArrayList<>();
     this.now = now;
   }
 
@@ -53,21 +58,16 @@ public class RequestReader implements Request {
 
   @Override
   public String toString() {
-    if (userName == null) {
-      userName = "unknown";
-    }
-    return "Request{"
-        + "credential=" + credential
-        + ", userName=" + userName
-        + ", action=" + action
-        + ", now=" + now
-        + ", doorID=" + doorId
-        + ", closed=" + doorClosed
-        + ", authorized=" + authorized
-        + ", reasons=" + reasons
-        + "}";
+    String displayName = (userName == null) ? "unknown" : userName;
+    return "Request reader userName " + displayName
+        + " action " + action
+        + " datetime " + now
+        + " doorId " + doorId
+        + " authorized " + authorized
+        + (authorized ? "" : " reasons " + reasons);
   }
 
+  @Override
   public JSONObject answerToJson() {
     JSONObject json = new JSONObject();
     json.put("authorized", authorized);
@@ -79,49 +79,50 @@ public class RequestReader implements Request {
     return json;
   }
 
-  // see if the request is authorized and put this into the request, then send it to the door.
-  // if authorized, perform the action.
+  @Override
   public void process() {
+    logger.debug(Markers.MILESTONE_1, "Processing reader request for door '{}' with action '{}'",
+        doorId, action);
     User user = DirectoryUserGroups.getInstance().findUserByCredential(credential);
     Door door = DirectoryAreas.getInstance().findDoorById(doorId);
     assert door != null : "door " + doorId + " not found";
     authorize(user, door);
-    // this sets the boolean authorize attribute of the request
+    // Process even if unauthorized so the door reports its current state and logs the attempt
     door.processRequest(this);
-    // even if not authorized we process the request, so that if desired we could log all
-    // the requests made to the server as part of processing the request
     doorClosed = door.isClosed();
   }
 
-  // the result is put into the request object plus, if not authorized, why not,
-  // only for testing
   private void authorize(User user, Door door) {
     if (user == null) {
+      userName = "unknown";
       authorized = false;
-      addReason("user doesn't exists");
+      addReason("User doesn't exist");
     } else {
       userName = user.getName();
-      // get the who, where, when and what in order to decide, and if not
-      // authorized add the reason(s)
       Space fromSpace = door.getFromSpace();
       Space toSpace = door.getToSpace();
 
-      authorized = user.canBeInSpace(fromSpace)
-          && user.canBeInSpace(toSpace)
-          && user.canSendRequests(now)
-          && user.canDoAction(action);
+      // Evaluate each condition once to avoid redundant Visitor traversals over areas
+      boolean inFromSpace = user.canBeInSpace(fromSpace);
+      boolean inToSpace = user.canBeInSpace(toSpace);
+      boolean inSchedule = user.canSendRequests(now);
+      boolean actionAllowed = user.canDoAction(action);
 
-      if (!user.canBeInSpace(fromSpace)) {
-        addReason("user can't be in fromSpace " + fromSpace.getId());
+      authorized = inFromSpace && inToSpace && inSchedule && actionAllowed;
+
+      if (!inFromSpace) {
+        addReason("Not allowed origin " + fromSpace.getId()
+            + " for group " + user.getGroupName());
       }
-      if (!user.canBeInSpace(toSpace)) {
-        addReason("user can't be in toSpace " + toSpace.getId());
+      if (!inToSpace) {
+        addReason("Not allowed destination " + toSpace.getId()
+            + " for group " + user.getGroupName());
       }
-      if (!user.canSendRequests(now)) {
-        addReason("user can't send requests now. (Now is " + now + " )");
+      if (!inSchedule) {
+        addReason("Present date and/or time not in schedule");
       }
-      if (!user.canDoAction(action)) {
-        addReason("user can't do action " + action);
+      if (!actionAllowed) {
+        addReason("Not allowed action " + action + " for group " + user.getGroupName());
       }
     }
   }

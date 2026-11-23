@@ -1,36 +1,28 @@
 package baseNoStates;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /*
- * Represents a specific physical room or space in the building.
- * Acts as the Leaf class in the Composite design pattern because it cannot contain
- * sub-areas.
+ * Leaf node in the Composite design pattern representing an individual physical room
+ * or zone (e.g., parking, hall, IT) that cannot contain child areas.
  *
- * A Space needs to know the doors that give access to it (those having this space as 'toSpace')
- * so that when an area request (lock/unlock) is sent to this space or an ancestor partition,
- * all descendant access doors can be retrieved and processed.
+ * Each Space keeps references to the doors giving access into it (doors with this space
+ * as 'toSpace') so area requests can locate every door leading into a room or partition.
+ * In the Visitor pattern, Space is a ConcreteElement dispatching to visitSpace(this).
  */
-public class Space extends Area{
-
+public class Space extends Area {
   private final ArrayList<Door> doors = new ArrayList<>();
 
-  public Space(String id, String description, Partition parent){
+  public Space(String id, String description, Partition parent) {
     super(id, description, parent);
   }
 
-  public void addDoor(Door door){
+  public void addDoor(Door door) {
     doors.add(door);
   }
 
   public ArrayList<Door> getDoors() {
     return doors;
-  }
-
-  @Override
-  public ArrayList<Space> getSpaces(){
-    return new ArrayList<>(Arrays.asList(this));
   }
 
   @Override

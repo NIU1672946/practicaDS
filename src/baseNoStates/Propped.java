@@ -4,47 +4,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * Concrete state of the State design pattern representing a propped door.
- * A door enters this alarm state when it was unlocked shortly, opened, and left open
- * for more than 10 seconds. Because the door is physically open, it cannot be locked
- * directly (locking an open door would be inconsistent). Once the door is physically
- * closed (close action), it automatically returns to the Locked state.
+ * Concrete State in the State design pattern representing a propped door alarm.
+ * A door enters Propped automatically when it stays physically open past the 10-second
+ * UnlockedShortly window. Because the door is physically open, lock, unlock, open, and
+ * unlockShortly requests are ignored; only physically closing the door clears the alarm
+ * and returns it to Locked.
  */
 public class Propped extends DoorState {
-    private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Propped");
+  private static final Logger logger = LoggerFactory.getLogger(Propped.class);
 
-    public Propped(Door door) {
-        super(door);
-        this.name = States.PROPPED;
-    }
-    @Override
-    public void open(){
-        //it will always be open since the state Propped is only attainable from having an UnlockedShortly door be open.
-        String msg = "Can't open door " + door.getId() + " because it's already open";
-        logger.info(Markers.MILESTONE_1,msg);
+  public Propped(Door door) {
+    super(door);
+    this.name = States.PROPPED;
+  }
 
-    }
+  @Override
+  public void open() {
+    logger.warn(Markers.MILESTONE_1, "Can't open door '{}' because it's propped and already open",
+        door.getId());
+  }
 
-    @Override
-    public void close(){
-        door.setClosed(true);
-        door.setState(new Locked(door));
-    }
+  @Override
+  public void close() {
+    door.setClosed(true);
+    door.setState(new Locked(door));
+    logger.info(Markers.MILESTONE_1, "Propped door '{}' closed and automatically locked",
+        door.getId());
+  }
 
-    @Override
-    public void lock(){
-        door.setState(new Locked(door));
-    }
+  @Override
+  public void lock() {
+    // Cannot lock a propped door because it is physically open
+    logger.warn(Markers.MILESTONE_1, "Can't lock door '{}' because it's propped (open)",
+        door.getId());
+  }
 
-    @Override
-    public void unlock(){
-        String msg = "Can't unlock door " + door.getId() + "because it's propped";
-        logger.info(Markers.MILESTONE_1,msg);
+  @Override
+  public void unlock() {
+    logger.warn(Markers.MILESTONE_1, "Can't unlock door '{}' because it's propped",
+        door.getId());
+  }
 
-    }
-    @Override
-    public void unlockShortly(){
-        String msg = "Can't unlock shortly door " + door.getId() + "because it's propped";
-        logger.info(Markers.MILESTONE_1,msg);
-    }
+  @Override
+  public void unlockShortly() {
+    logger.warn(Markers.MILESTONE_1, "Can't unlock shortly door '{}' because it's propped",
+        door.getId());
+  }
 }

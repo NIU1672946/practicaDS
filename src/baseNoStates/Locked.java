@@ -4,16 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * Concrete state of the State design pattern representing a locked door.
- * A locked door is always physically closed and cannot be opened directly.
- * It can only transition to Unlocked (via unlock) or to UnlockedShortly (via unlockShortly).
+ * Concrete State in the State design pattern representing a locked door.
+ * A locked door is guaranteed to be physically closed and blocks open requests.
+ * From Locked, a door can only transition to Unlocked (via unlock) or to
+ * UnlockedShortly (via unlockShortly).
  */
-@SuppressWarnings({"checkstyle:MissingJavadocType", "checkstyle:EmptyLineSeparator"})
 public class Locked extends DoorState {
-  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Locked");
+  private static final Logger logger = LoggerFactory.getLogger(Locked.class);
 
-
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public Locked(Door door) {
     super(door);
     this.name = States.LOCKED;
@@ -21,30 +19,29 @@ public class Locked extends DoorState {
 
   @Override
   public void open() {
-    String msg="Can't open door " + door.getId() + " because it's locked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, "Can't open door '{}' because it's locked", door.getId());
   }
 
   @Override
   public void close() {
-    String msg = "Door " + door.getId() + " is already closed and locked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, "Door '{}' is already closed and locked", door.getId());
   }
 
   @Override
   public void lock() {
-    String msg = "Can't lock door " + door.getId() + " because it's already locked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.warn(Markers.MILESTONE_1, "Can't lock door '{}' because it's already locked",
+        door.getId());
   }
 
   @Override
   public void unlock() {
     door.setState(new Unlocked(door));
+    logger.info(Markers.MILESTONE_1, "Door '{}' unlocked", door.getId());
   }
 
-  @SuppressWarnings({"checkstyle:WhitespaceAround", "checkstyle:GoogleRightCurly", "checkstyle:WhitespaceAfter", "checkstyle:LeftCurly"})
   @Override
-  public void unlockShortly(){door.setState(new UnlockedShortly(door));}
-
+  public void unlockShortly() {
+    door.setState(new UnlockedShortly(door));
+    logger.info(Markers.MILESTONE_1, "Door '{}' unlocked shortly", door.getId());
+  }
 }
-

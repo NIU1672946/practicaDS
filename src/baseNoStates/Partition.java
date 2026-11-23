@@ -3,12 +3,14 @@ package baseNoStates;
 import java.util.ArrayList;
 
 /*
- * Represents a logical grouping of one or more spaces and/or other partitions (e.g., a floor
- * or the entire building). Acts as the Composite class in the Composite design pattern.
- * It implements the Area operations by recursively traversing its child areas.
+ * Composite node in the Composite design pattern representing a logical grouping of
+ * spaces and/or nested partitions (such as a floor or the entire building).
+ *
+ * Grouping spaces into partitions allows administrators to grant permissions or
+ * lock/unlock whole floors at once. In the Visitor pattern, Partition acts as a
+ * ConcreteElement whose accept() dispatches back to visitor.visitPartition(this).
  */
 public class Partition extends Area {
-
   private final ArrayList<Area> areas = new ArrayList<>();
 
   public Partition(String id, String description, Partition parent) {
@@ -19,15 +21,6 @@ public class Partition extends Area {
     areas.add(area);
   }
 
-  @Override
-  public ArrayList<Space> getSpaces() {
-    ArrayList<Space> spaces = new ArrayList<>();
-    for (Area area : areas) {
-      spaces.addAll(area.getSpaces());
-    }
-    return spaces;
-  }
-  
   public ArrayList<Area> getAreas() {
     return areas;
   }

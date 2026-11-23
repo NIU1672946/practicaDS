@@ -1,21 +1,16 @@
+// Package name kept from the starter code (breaks Checkstyle lowercase PackageName rule).
 package baseNoStates;
 
-// Before executing enable assertions :
-// https://se-education.org/guides/tutorials/intellijUsefulSettings.html
-
-import java.time.LocalDateTime;
-
 /*
- * Entry point of the Access Control Unit (ACU) server application.
- * Initializes the building areas and doors first, then creates the user groups
- * (which reference those areas), and finally starts the HTTP WebServer.
+ * Entry point of the Access Control Unit (ACU) server.
+ * Initialization order is critical: areas and doors must be built before user groups
+ * (which look up areas by ID), after which the Clock and WebServer Singletons are started.
  */
 public class Main {
   public static void main(String[] args) {
     DirectoryAreas.getInstance().makeAreas();
     DirectoryUserGroups.getInstance().makeUserGroups();
-
-    new WebServer();
-
+    Clock.getInstance().start();
+    WebServer.getInstance().start();
   }
 }
