@@ -1,5 +1,8 @@
 package baseNoStates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +27,7 @@ public final class DirectoryUserGroups {
 
   // implementation of the Singleton pattern
   private static DirectoryUserGroups uniqueInstance = null;
+  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.DirectoryUserGroups");
 
   private DirectoryUserGroups() {
     userGroups = new ArrayList<>();
@@ -174,7 +178,8 @@ public final class DirectoryUserGroups {
         return user;
       }
     }
-    System.out.println("user with credential " + credential + " not found");
+    String msg = "user with credential " + credential + " not found";
+    logger.warn(Markers.MILESTONE_1,msg);
     return null; // otherwise we get a Java error
   }
 }

@@ -1,5 +1,8 @@
 package baseNoStates;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +16,8 @@ import java.util.Arrays;
  * the entire execution of the ACU server, providing a single global point of access.
  */
 public final class DirectoryAreas {
+  private static final Logger logger = LoggerFactory.getLogger("baseNoStates.Unlocked");
+
   private Area rootArea;
   private final ArrayList<Door> allDoors;
 
@@ -88,13 +93,19 @@ public final class DirectoryAreas {
         return door;
       }
     }
-    System.out.println("door with id " + id + " not found");
+    String msg = "door with id " + id + " not found";
+    logger.warn(Markers.MILESTONE_1,msg);
     return null; // otherwise we get a Java error
   }
 
   // this is needed by RequestRefresh
   public ArrayList<Door> getAllDoors() {
-    System.out.println(allDoors);
+    String msg = "";
+    for(Door d : allDoors){
+      msg += d.toString() + "\n";
+    }
+    logger.debug(Markers.MILESTONE_1,msg);
+
     return allDoors;
   }
 }
