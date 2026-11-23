@@ -17,11 +17,12 @@ public class Propped extends DoorState {
         super(door);
         this.name = States.PROPPED;
     }
+
     @Override
     public void open(){
-        //it will always be open since the state Propped is only attainable from having an UnlockedShortly door be open.
+        // Ut will always be open since the state Propped is only attainable from having an UnlockedShortly door be open.
         String msg = "Can't open door " + door.getId() + " because it's already open";
-        logger.info(Markers.MILESTONE_1,msg);
+        logger.info(Markers.MILESTONE_1, msg);
 
     }
 
@@ -39,12 +40,12 @@ public class Propped extends DoorState {
     @Override
     public void unlock(){
         String msg = "Can't unlock door " + door.getId() + "because it's propped";
-        logger.info(Markers.MILESTONE_1,msg);
+        logger.info(Markers.MILESTONE_1, msg);
 
     }
     @Override
     public void unlockShortly(){
         String msg = "Can't unlock shortly door " + door.getId() + "because it's propped";
-        logger.info(Markers.MILESTONE_1,msg);
+        logger.info(Markers.MILESTONE_1, msg);
     }
 }

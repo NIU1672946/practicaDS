@@ -28,13 +28,13 @@ public class Locked extends DoorState {
   @Override
   public void close() {
     String msg = "Door " + door.getId() + " is already closed and locked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
   }
 
   @Override
   public void lock() {
     String msg = "Can't lock door " + door.getId() + " because it's already locked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
   }
 
   @Override
@@ -42,9 +42,8 @@ public class Locked extends DoorState {
     door.setState(new Unlocked(door));
   }
 
-  @SuppressWarnings({"checkstyle:WhitespaceAround", "checkstyle:GoogleRightCurly", "checkstyle:WhitespaceAfter", "checkstyle:LeftCurly"})
   @Override
-  public void unlockShortly(){door.setState(new UnlockedShortly(door));}
+  public void unlockShortly(){ door.setState(new UnlockedShortly(door)); }
 
 }
 

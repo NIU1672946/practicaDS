@@ -48,7 +48,7 @@ public class UnlockedShortly extends DoorState implements Observer {
     } else {
 
       String msg = "Can't open door " + door.getId() + " because it's already open";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.info(Markers.MILESTONE_1, msg);
     }
   }
 
@@ -56,7 +56,7 @@ public class UnlockedShortly extends DoorState implements Observer {
   public void close() {
     if (door.isClosed()) {
       String msg = "Can't close door " + door.getId() + " because it's already closed";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.info(Markers.MILESTONE_1, msg);
 
     } else {
       door.setClosed(true);
@@ -66,20 +66,20 @@ public class UnlockedShortly extends DoorState implements Observer {
   @Override
   public void lock() {
     String msg = "Can't lock door " + door.getId() + " because it's unlocked shortly";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
   }
 
   @Override
   public void unlock() {
     String msg = "Can't unlock door " + door.getId() + " because it's unlocked shortly";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
   }
 
   @Override
   public void unlockShortly() {
     // A door cannot be repeatedly unlocked shortly while it is already in this temporary state
     String msg = "Can't unlock shortly door " + door.getId() + " because it already is";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
   }
 
   @Override

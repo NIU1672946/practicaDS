@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * or the entire building). Acts as the Composite class in the Composite design pattern.
  * It implements the Area operations by recursively traversing its child areas.
  */
+
 public class Partition extends Area {
 
   private final ArrayList<Area> areas = new ArrayList<>();

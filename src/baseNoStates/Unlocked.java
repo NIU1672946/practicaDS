@@ -21,7 +21,7 @@ public class Unlocked extends DoorState{
       door.setClosed(false);
     } else {
       String msg = "Can't open door " + door.getId() + " because it's already open";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.info(Markers.MILESTONE_1, msg);
     }
   }
 
@@ -29,7 +29,7 @@ public class Unlocked extends DoorState{
   public void close(){
     if (door.isClosed()) {
       String msg = "Can't close door " + door.getId() + " because it's already closed";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.info(Markers.MILESTONE_1, msg);
 
     } else {
       door.setClosed(true);
@@ -44,21 +44,21 @@ public class Unlocked extends DoorState{
     }
     else {
       String msg = "Can't lock door " + door.getId() + " because it's open";
-      logger.info(Markers.MILESTONE_1,msg);
+      logger.info(Markers.MILESTONE_1, msg);
     }
   }
 
   @Override
   public void unlock() {
     String msg = "Can't unlock door " + door.getId() + " because it's already unlocked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
 
   }
 
   @Override
   public void unlockShortly(){
     String msg = "Can't unlock shortly door " + door.getId() + "because it's unlocked";
-    logger.info(Markers.MILESTONE_1,msg);
+    logger.info(Markers.MILESTONE_1, msg);
 
   }
 }
