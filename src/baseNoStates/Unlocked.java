@@ -59,6 +59,7 @@ public class Unlocked extends DoorState{
   public void unlockShortly(){
     String msg = "Can't unlock shortly door " + door.getId() + "because it's unlocked";
     logger.info(Markers.MILESTONE_1,msg);
+
   }
 }
 

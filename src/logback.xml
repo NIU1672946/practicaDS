@@ -24,7 +24,7 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
                 %msg%n</pattern>
         </encoder>
-        <file>general_logs.html</file>
+        <file>general_log.html</file>
     </appender>
 
     <appender name="WEB_SERVER_LOGS_FILE" class="ch.qos.logback.core.FileAppender">
@@ -33,11 +33,11 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%marker] %logger{36} -
                 %msg%n</pattern>
         </encoder>
-        <file>web_server_logs.html</file>
+        <file>activity.html</file>
     </appender>
 
     <logger name = "baseNoStates.WebServer">
-       <appender-ref ref = "WEB_SERVER_LOGS_FILE"/>
+        <appender-ref ref = "WEB_SERVER_LOGS_FILE"/>
     </logger>
 
     <root level="debug">
